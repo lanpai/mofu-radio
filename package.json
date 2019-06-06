@@ -1,0 +1,16 @@
+{
+  "name": "mofu-radio",
+  "version": "1.0.0",
+  "description": "a remake of piyo-radio using WebSockets and implementing new features",
+  "main": "mofu-radio.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lanpai/mofu-radio.git"
+  },
+  "author": "lanpai",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/lanpai/mofu-radio/issues"
+  },
+  "homepage": "https://github.com/lanpai/mofu-radio#readme"
+}
