@@ -1,3 +1,7 @@
+# mofu-radio
+config.json
+db.json
+
 # Logs
 logs
 *.log
