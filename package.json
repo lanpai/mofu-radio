@@ -12,5 +12,10 @@
   "bugs": {
     "url": "https://github.com/lanpai/mofu-radio/issues"
   },
-  "homepage": "https://github.com/lanpai/mofu-radio#readme"
+  "homepage": "https://github.com/lanpai/mofu-radio#readme",
+  "dependencies": {
+    "lowdb": "^1.0.0",
+    "uuid": "^3.3.2",
+    "websocket": "^1.0.28"
+  }
 }
