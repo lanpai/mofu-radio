@@ -1,6 +1,7 @@
 # mofu-radio
 config.json
 db.json
+disc/
 
 # Logs
 logs
