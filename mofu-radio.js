@@ -7,6 +7,7 @@ const { queue, NextSong } = require('./api/QueueHandler.js');
 const fs = require('fs');
 const { Readable } = require('stream');
 const http = require('http');
+const { execSync } = require('child_process');
 
 // REQUIRING NODE-LAME
 const { Lame } = require('node-lame');
@@ -24,10 +25,7 @@ class FileReadable extends Readable {
     constructor(source, options) {
         super(options);
 
-        // SLICING TO SKIP ID3
-        let header = Buffer.from('\u00ff\u00fb', 'ascii');
-        let firstIndex = source.indexOf(header);
-        this['fileSource'] = source.slice(source.indexOf(header, firstIndex + 1));
+        this['fileSource'] = source;
     }
 
     _read(size) {
@@ -130,14 +128,25 @@ function handleChunk() {
     }
 }
 
-function preloadQueuedSong() {
+function encode(input, callback) {
+    // COPYING FILE TO TMP
+    if (!fs.existsSync(Config('directories.tmp')))
+        fs.mkdirSync(Config('directories.tmp'));
+    fs.copyFileSync(`${Config('directories.disc')}/${input}`, `${Config('directories.tmp')}/${input}`);
+    
+    // STRIPPING ID3 TAGS
+    execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input}"`);
+
     let encoder = new Lame({
         bitrate: Config('audio.bitrate'),
         resample: Config('audio.sampleFreq'),
         ...LameOptions
-    }).setFile(`${Config('directories.disc')}/${queue[0].file}`);
+    }).setFile(`${Config('directories.tmp')}/${input}`);
     encoder.encode().then(function onEncoded() {
-        nextFileStream = new FileReadable(encoder.getBuffer());
+        // DELETE TMP FILE
+        fs.unlinkSync(`${Config('directories.tmp')}/${input}`);
+
+        callback(encoder.getBuffer());
     }).catch(function onEncodeErr(err) {
         Log(err, 1);
     });
@@ -154,7 +163,9 @@ function nextSong() {
     timer.setInterval(handleChunk, '', `${Config('audio.chunkTime')}s`);
 
     // PRELOADING NEXT SONG IN QUEUE
-    preloadQueuedSong();
+    encode(queue[0].file, function onEncoded(buffer) {
+        nextFileStream = new FileReadable(buffer);
+    });
 
     // END STATE
     fileStream.on('end', function onStreamEnd() {
@@ -179,22 +190,14 @@ server.listen(Config('network.port'),
         // ADDING FIRST SONG
         currentSong = NextSong();
 
-        // ENCODING FILE FOR TRANSFER
-        let encoder = new Lame({
-            bitrate: Config('audio.bitrate'),
-            resample: Config('audio.sampleFreq'),
-            ...LameOptions
-        }).setFile(`${Config('directories.disc')}/${currentSong.file}`);
-        encoder.encode().then(function onEncoded() {
-            fileStream = new FileReadable(encoder.getBuffer());
+        encode(currentSong.file, function onEncoded(buffer) {
+            fileStream = new FileReadable(buffer);
 
             // CREATING BACK BUFFER
             for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
                 handleChunk();
 
             nextSong();
-        }).catch(function onEncodeErr(err) {
-            Log(err, 1);
         });
     }
 );

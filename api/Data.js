@@ -12,7 +12,8 @@ config.defaultsDeep({
     },
     directories: {
         disc: 'disc',
-        queue: 'queue'
+        queue: 'queue',
+        tmp: 'tmp'
     },
     logging: {
         verbosity: 4
@@ -28,7 +29,7 @@ config.defaultsDeep({
     audio: {
         bitrate: 320,
         sampleFreq: 44.1,
-        chunkTime: 0.2,
+        chunkTime: 0.1,
         backBufferLength: 15
     }
 }).write();
