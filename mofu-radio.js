@@ -1,11 +1,20 @@
 // MOFU-RADIO REQUIREMENTS
 const { Config } = require('./api/Data.js');
 const Log = require('./api/Log.js');
+const { queue, NextSong } = require('./api/QueueHandler.js');
 
 // BASIC REQUIREMENTS
 const fs = require('fs');
 const { Readable } = require('stream');
 const http = require('http');
+
+// REQUIRING NODE-LAME
+const { Lame } = require('node-lame');
+
+const LameOptions = {
+    output: 'buffer',
+    cbr: true
+};
 
 // REQUIRING NANOTIMER
 const NanoTimer = require('nanotimer');
@@ -14,7 +23,11 @@ const NanoTimer = require('nanotimer');
 class FileReadable extends Readable {
     constructor(source, options) {
         super(options);
-        this['fileSource'] = source;
+
+        // SLICING TO SKIP ID3
+        let header = Buffer.from('\u00ff\u00fb', 'ascii');
+        let firstIndex = source.indexOf(header);
+        this['fileSource'] = source.slice(source.indexOf(header, firstIndex + 1));
     }
 
     _read(size) {
@@ -32,8 +45,10 @@ class FileReadable extends Readable {
 // GLOBAL VARIABLES
 var listeners = [];
 var fileStream = null;
+var nextFileStream = null;
 var backBuffer = [];
 var metadata = {};
+var currentSong = null;
 
 // INITIALIZING WEB SERVER METHODS
 var server = http.createServer(
@@ -41,17 +56,17 @@ var server = http.createServer(
         Log('received request for ' + req.url, 4);
         
 
-        // PARSE GET REQUEST
+        // PARSING GET REQUEST
         const get = req.url.split('?');
         const path = get[0] || '';
         const args = get[1] || '';
 
         switch (path) {
-            case '/stream':
+            case '/stream.mp3':
                 res.writeHead(200, {
                     'Accept-Ranges': 'none',
                     'Cache-Control': 'no-cache,no-store,must-revalidate,max-age=0',
-                    'Connection': 'close',
+                    'Connection': 'keep-alive',
                     'Content-Type': 'audio/mpeg',
                     'icy-name': Config('icy.name'),
                     'icy-description': Config('icy.description'),
@@ -59,11 +74,11 @@ var server = http.createServer(
                     'icy-metaint': (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime')
                 });
 
-                // WRITE BACK BUFFER
+                // WRITING BACK BUFFER
                 let backBufferConcat = Buffer.concat(backBuffer);
                 res.write(backBufferConcat);
 
-                // ADD USER TO LISTENERS
+                // ADDING USER TO LISTENERS
                 listeners.push({
                     isIcy: (req.headers['icy-metadata'] || 0) === 1,
                     res: res,
@@ -85,7 +100,7 @@ function interlaceIcyChunk(chunk, subchunk, stride, offset) {
     //return Buffer;
 }
 
-function sendChunk(chunk) {
+async function sendChunk(chunk) {
     for (let listener of listeners) {
         // interlace if necessary here
         listener.res.write(chunk);
@@ -93,53 +108,93 @@ function sendChunk(chunk) {
     }
 }
 
-function nextSong() {
-    fileStream = new FileReadable(fs.readFileSync('disc/MYTH & ROID - STYX HELIX.mp3'));
-    fileStream.on('end', function onStreamEnd() {
-        fileStream.destroy();
-        nextSong();
-    });
-}
-
-function listenerLoop() {
-    // ALLOCATE BUFFER
+function handleChunk() {
+    // CREATING BUFFER
     let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime');
-    let chunk = Buffer.alloc(chunkSize);
+    let chunk = fileStream._read(chunkSize);
 
-    // RETRIEVE CHUNK FROM STREAM
-    let readChunk = fileStream._read(chunkSize);
-    chunk.fill(readChunk, 0, readChunk.length);
-
-    // ADD CHUNK TO BACK BUFFER
+    // ADDING CHUNK TO BACK BUFFER
     backBuffer.push(chunk);
     if (Config('audio.backBufferLength') / Config('audio.chunkTime') < backBuffer.length)
         backBuffer.shift();
 
-    // SEND CURRENT CHUNK
+    // SENDING CURRENT CHUNK
     sendChunk(chunk);
 
     // LISTENER CLEANUP
     for (let i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i].res.socket.writable === false) {
+            Log(`cleaning up dead listener (data sent: ${listeners[i].dataSent} bytes) (listeners: ${listeners.length - 1})`, 4);
             listeners.splice(i, 1);
-            Log(`cleaning up dead listener (listeners: ${listeners.length})`, 4);
         }
     }
+}
+
+function preloadQueuedSong() {
+    let encoder = new Lame({
+        bitrate: Config('audio.bitrate'),
+        resample: Config('audio.sampleFreq'),
+        ...LameOptions
+    }).setFile(`${Config('directories.disc')}/${queue[0].file}`);
+    encoder.encode().then(function onEncoded() {
+        nextFileStream = new FileReadable(encoder.getBuffer());
+    }).catch(function onEncodeErr(err) {
+        Log(err, 1);
+    });
+}
+
+function nextSong() {
+    Log(`now playing "${currentSong.artist} - ${currentSong.title}"`, 3);
+
+    if (fileStream === null)
+        Log('file stream is null', 1);
+
+    // LISTENER LOOP
+    let timer = new NanoTimer();
+    timer.setInterval(handleChunk, '', `${Config('audio.chunkTime')}s`);
+
+    // PRELOADING NEXT SONG IN QUEUE
+    preloadQueuedSong();
+
+    // END STATE
+    fileStream.on('end', function onStreamEnd() {
+        // CLEANING UP
+        timer.clearInterval();
+        fileStream.destroy();
+
+        // LOADING PRELOADED STREAM
+        fileStream = nextFileStream;
+
+        // RETRIEVING NEXT SONG
+        currentSong = NextSong();
+
+        nextSong();
+    });
 }
 
 server.listen(Config('network.port'),
     function onListen() {
         Log(`server is listening on ${Config('network.port')}`, 3);
 
-        // ADD FIRST SONG
-        nextSong();
+        // ADDING FIRST SONG
+        currentSong = NextSong();
 
-        // CREATE EMPTY BACK BUFFER
-        for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
-            listenerLoop();
+        // ENCODING FILE FOR TRANSFER
+        let encoder = new Lame({
+            bitrate: Config('audio.bitrate'),
+            resample: Config('audio.sampleFreq'),
+            ...LameOptions
+        }).setFile(`${Config('directories.disc')}/${currentSong.file}`);
+        encoder.encode().then(function onEncoded() {
+            fileStream = new FileReadable(encoder.getBuffer());
 
-        // LISTENER LOOP
-        let timer = new NanoTimer();
-        timer.setInterval(listenerLoop, '', `${Config('audio.chunkTime')}s`);
+            // CREATING BACK BUFFER
+            for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
+                handleChunk();
+
+            nextSong();
+        }).catch(function onEncodeErr(err) {
+            Log(err, 1);
+        });
     }
 );

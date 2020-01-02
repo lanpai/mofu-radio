@@ -4,9 +4,12 @@ const FileSync = require('lowdb/adapters/FileSync');
 var db = low(new FileSync('db.json'));
 var config = low(new FileSync('config.json'));
 
-config.defaults({
+config.defaultsDeep({
     version: 'pre-alpha-34ki',
     databaseVersion: '1.0',
+    queue: {
+        size: 5
+    },
     directories: {
         disc: 'disc',
         queue: 'queue'
@@ -24,6 +27,7 @@ config.defaults({
     },
     audio: {
         bitrate: 320,
+        sampleFreq: 44.1,
         chunkTime: 0.2,
         backBufferLength: 15
     }
@@ -43,17 +47,13 @@ function Config(path) {
     return config.get(path).value();
 }
 
-function ReloadDB() {
-    db = low(new FileSync('db.json'));
-}
-
 function ReloadConfig() {
-    config = low(new FileSync('config.json'));
+    config.read();
 }
 
-function AddSong(artist, title, options) {
+function AddSong(artist, title, file, options) {
     // RELOADING DATABASE
-    ReloadDB();
+    db.read();
 
     // FETCHING ID
     let latest = db.get('songs').sortBy('id').last().value();
@@ -62,7 +62,7 @@ function AddSong(artist, title, options) {
     // PUSHING SONG
     db.get('songs').push({
         id: id,
-        file: `${title}.mp3`,
+        file: file,
         artist: artist,
         title: title,
         options: options
@@ -72,6 +72,6 @@ function AddSong(artist, title, options) {
 module.exports = {
     db, config,
     DB, Config,
-    ReloadDB, ReloadConfig,
+    ReloadConfig,
     AddSong
 };
