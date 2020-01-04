@@ -8,7 +8,7 @@ let isPlaying = false
 store.subscribe(function onStateChange() {
     if (store.getState().playing && !isPlaying) {
         isPlaying = true;
-        audio.src = 'http://127.0.0.1:5127/stream.mp3';
+        audio.src = '/stream.mp3';
         audio.play();
     }
     else if (!store.getState().playing && isPlaying) {

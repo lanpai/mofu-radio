@@ -2,7 +2,7 @@ import { UpdateSong, UpdateList } from './actions.js';
 
 //WEBSOCKET
 console.log('connecting to socket');
-var ws = new WebSocket('ws://127.0.0.1:5127');
+var ws = new WebSocket('ws://' + location.host);
 
 ws.onmessage = function onWSMessage(e) {
     let message = JSON.parse(e.data);
