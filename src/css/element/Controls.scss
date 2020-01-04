@@ -1,0 +1,32 @@
+.volume {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1vh;
+    border-radius: 1vh;
+    background: #d0d0d0;
+    outline: none;
+    opacity: 0.6;
+    transition: opacity 500ms;
+}
+
+.volume:hover {
+    opacity: 1;
+}
+
+.volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 2.5vh;
+    height: 1.5vh;
+    border-radius: 0.5vh;
+    background: deeppink;
+    cursor: pointer;
+}
+
+.volume::-moz-range-thumb {
+    width: 2.5vh;
+    height: 1.5vh;
+    border-radius: 0.5vh;
+    background: deeppink;
+    cursor: pointer;
+}

@@ -28,7 +28,6 @@ class Request extends Component {
     }
 
     render() {
-        console.log('render queue');
         let list = [];
         for (let song of this.props.list) {
             let metadata = {

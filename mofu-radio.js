@@ -8,6 +8,7 @@ const fs = require('fs');
 const { Readable } = require('stream');
 const http = require('http');
 const { execSync } = require('child_process');
+const path = require('path');
 
 // REQUIRING WS
 const WebSocket = require('ws');
@@ -59,6 +60,19 @@ class FileReadable extends Readable {
 }
 
 // GLOBAL VARIABLES
+const map = {
+	'.ico': 'image/x-icon',
+	'.html': 'text/html',
+	'.js': 'text/javascript',
+	'.json': 'application/json',
+	'.css': 'text/css',
+	'.png': 'image/png',
+	'.jpg': 'image/jpeg',
+	'.wav': 'audio/wav',
+	'.mp3': 'audio/mpeg',
+	'.svg': 'image/svg+xml',
+};
+
 var listeners = [];
 var fileStream = null;
 var nextFileStream = null;
@@ -74,10 +88,10 @@ var server = http.createServer(
 
         // PARSING GET REQUEST
         const get = req.url.split('?');
-        const path = get[0] || '';
+        const webPath = get[0] || '';
         const args = get[1] || '';
 
-        switch (path) {
+        switch (webPath) {
             case '/stream.mp3':
                 res.writeHead(200, {
                     'Accept-Ranges': 'none',
@@ -105,8 +119,32 @@ var server = http.createServer(
 
                 break;
             default:
-                res.writeHead(404);
-                res.end();
+                // ACCESSING FILES IN DIST
+                let pathName = path.normalize('dist/' + webPath);
+                const ext = path.parse(webPath).ext;
+                res.setHeader('Access-Control-Allow-Origin', 'none');
+
+                fs.access(pathName, fs.constants.F_OK, (err) => {
+                    if (err) {
+                        res.writeHead(200, { 'Content-type': 'text/html' });
+                        res.end(`404: File ${webPath} not found!`);
+                        return;
+                    }
+
+                    if (fs.statSync(pathName).isDirectory())
+                        pathName += 'index.html';
+
+                    fs.readFile(pathName, (err, data) => {
+                        if (err) {
+                            res.statusCode = 500;
+                            res.end(`500: Internal server error.`);
+                        }
+                        else {
+                            res.writeHead(200, { 'Content-type': map[ext] || 'text/html' });
+                            res.end(data);
+                        }
+                    });
+                });
                 break;
         }
     }
