@@ -1,0 +1,29 @@
+#main-interface {
+    display: flex;
+    margin: 0 auto;
+    width: 100vh;
+    max-width: 100%;
+
+    flex-direction: column;
+}
+
+#main-interface>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 5%;
+    margin-top: calc(5% + 4vh);
+    min-height: 86vh;
+}
+
+#main-interface>* {
+    animation-name: transition-anim;
+    animation-duration: 1000ms;
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+@keyframes transition-anim {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+}

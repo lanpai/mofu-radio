@@ -1,14 +1,18 @@
 // MOFU-RADIO REQUIREMENTS
-const { db, Config, ReloadDB } = require('./Data.js');
+const { db, Config, ReloadDB, AddRequest } = require('./Data.js');
 const Log = require('./Log.js');
 
 var queue = [];
 
-function AddSong() {
+function PickSong() {
     // OLDEST SONG
-    let song = db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 }).head();
+    return db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 }).head().value().id;
+}
 
+function AddSong(id) {
     // ADDING TO QUEUE
+    let song = db.read().get('songs').find({ id: id });
+
     queue.push(song.value());
     Log(`added "${song.value().artist} - ${song.value().title}" to the queue`, 3);
 
@@ -29,11 +33,17 @@ function NextSong() {
     // FILLING QUEUE
     let deltaSize = Config('queue.size') - queue.length + 1;
     for (let i = 0; i < deltaSize; i++)
-        AddSong();
+        AddSong(PickSong());
 
     return queue.shift();
 }
 
+function Request(id, ip) {
+    AddSong(id);
+    AddRequest(id, ip);
+}
+
 module.exports = {
-    queue, NextSong
+    queue, NextSong,
+    Request
 };

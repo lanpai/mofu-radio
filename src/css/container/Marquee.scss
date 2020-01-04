@@ -1,0 +1,28 @@
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.marquee>* {
+    display: inline-block
+}
+
+.marquee.active {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+.marquee.active>* {
+    width: 100%;
+    animation: scroll 10s linear infinite;
+    display: flex;
+    justify-content: center;
+}
+.marquee.active>*>* {
+    display: inline-block;
+    animation: scroll 10s linear infinite;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(50%) }
+    100% { transform: translateX(-50%) }
+}

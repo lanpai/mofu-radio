@@ -1,7 +1,7 @@
 // MOFU-RADIO REQUIREMENTS
-const { Config } = require('./api/Data.js');
+const { db, Config, CanRequest } = require('./api/Data.js');
 const Log = require('./api/Log.js');
-const { queue, NextSong } = require('./api/QueueHandler.js');
+const { queue, NextSong, Request } = require('./api/QueueHandler.js');
 
 // BASIC REQUIREMENTS
 const fs = require('fs');
@@ -9,12 +9,30 @@ const { Readable } = require('stream');
 const http = require('http');
 const { execSync } = require('child_process');
 
+// REQUIRING WS
+const WebSocket = require('ws');
+
 // REQUIRING NODE-LAME
 const { Lame } = require('node-lame');
 
 const LameOptions = {
     output: 'buffer',
     cbr: true
+};
+
+// REQUIRING FUSE.JS
+const Fuse = require('fuse.js');
+const fuseOptions = {
+    shouldSort: true,
+    threshold: 0.8,
+    location: 0,
+    distance: 10,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+        'artist', 'title', 'tags',
+        'en.artist', 'en.title', 'en.tags'
+    ]
 };
 
 // REQUIRING NANOTIMER
@@ -94,15 +112,101 @@ var server = http.createServer(
     }
 );
 
+// INITIALIZING WEBSOCKET SERVER
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', function onWSConnection(ws, req) {
+    let remoteAddr = req.connection.remoteAddress;
+    Log(`received new socket connection (${remoteAddr})`, 4);
+
+    // SENDING INITIAL DATA
+    ws.send(JSON.stringify({ type: 'UPDATE_SONG', currentSong: currentSong, queue, queue }));
+
+    ws.on('message', function onIncomingMessage(message) {
+        try {
+            try {
+                message = JSON.parse(message);
+            }
+            catch (e) {
+                Log(`failed to parse message JSON (${remoteAddr})\n` + e, 3);
+                return;
+            }
+
+            switch (message.type) {
+                case 'FETCH_LIST':
+                    // FUZZY SEARCHING THROUGH DATABASE
+                    let filter = message.filter || '';
+                    let fuse = new Fuse(db.read().get('songs').value(), fuseOptions);
+                    let result = fuse.search(filter);
+                    ws.send(JSON.stringify({
+                        type: 'UPDATE_LIST',
+                        list: result
+                    }));
+                    return;
+                case 'REQUEST':
+                    if (message.id) {
+                        // CHECKING IS USER CAN REQUEST
+                        let canRequest = CanRequest(message.id, remoteAddr);
+                        if (canRequest === true) {
+                            Request(message.id, remoteAddr);
+                            ws.send(JSON.stringify({
+                                type: 'MESSAGE',
+                                message: 'Song has been requested'
+                            }));
+                        }
+                        else {
+                            ws.send(JSON.stringify({
+                                type: 'MESSAGE',
+                                message: canRequest
+                            }));
+                        }
+                    }
+                    return;
+                default:
+                    Log('failed to determine type of socket message', 3)
+                    return;
+            }
+        }
+        catch (e) {
+            Log(`error on socket message(${remoteAddr})\n` + e, 2);
+        }
+    });
+
+    // CHECKING FOR VALID CONNECTION
+    let alive = true;
+    ws.on('pong', function pong() {
+        alive = true;
+    });
+    const pingInterval = setInterval(function ping() {
+        if (alive === false) return ws.terminate();
+
+        alive = false;
+        ws.ping(function noop() {});
+    }, 3000);
+});
+
+async function wsBroadcast(message) {
+    setTimeout(function onDelay() {
+        let jsonMsg = JSON.stringify(message);
+        wss.clients.forEach(function send(ws) {
+            ws.send(jsonMsg);
+        })
+    }, Config('audio.backBufferLength') * 1000);
+}
+
 function interlaceIcyChunk(chunk, subchunk, stride, offset) {
     //return Buffer;
 }
 
-async function sendChunk(chunk) {
+async function sendChunk(listener, chunk) {
+    // interlace if necessary here
+    listener.res.write(chunk);
+    listener.dataSent += chunk.length;
+}
+
+async function sendChunkBulk(chunk) {
     for (let listener of listeners) {
-        // interlace if necessary here
-        listener.res.write(chunk);
-        listener.dataSent += chunk.length;
+        sendChunk(listener, chunk)
     }
 }
 
@@ -117,7 +221,7 @@ function handleChunk() {
         backBuffer.shift();
 
     // SENDING CURRENT CHUNK
-    sendChunk(chunk);
+    sendChunkBulk(chunk);
 
     // LISTENER CLEANUP
     for (let i = listeners.length - 1; i >= 0; i--) {
@@ -129,6 +233,8 @@ function handleChunk() {
 }
 
 function encode(input, callback) {
+    Log(`encoding "${input}"`, 4);
+
     // COPYING FILE TO TMP
     if (!fs.existsSync(Config('directories.tmp')))
         fs.mkdirSync(Config('directories.tmp'));
@@ -137,6 +243,7 @@ function encode(input, callback) {
     // STRIPPING ID3 TAGS
     execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input}"`);
 
+    // RUNNING LAME ENCODER
     let encoder = new Lame({
         bitrate: Config('audio.bitrate'),
         resample: Config('audio.sampleFreq'),
@@ -154,6 +261,14 @@ function encode(input, callback) {
 
 function nextSong() {
     Log(`now playing "${currentSong.artist} - ${currentSong.title}"`, 3);
+    wsBroadcast({
+        type: 'UPDATE_SONG',
+        currentSong: {
+            ...currentSong,
+            start: Date.now() + Config('backBufferLength') * 1000
+        },
+        queue: queue
+    });
 
     if (fileStream === null)
         Log('file stream is null', 1);
