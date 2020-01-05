@@ -53,10 +53,15 @@ function Request(id, ip) {
     AddRequest(id, ip);
 }
 
+function GetSong(id) {
+    return db.read().get('songs').find({ id: id }).value();
+}
+
 module.exports = {
     queue,
     NextSong,
     CurrentSong,
     CurrentQueue,
-    Request
+    Request,
+    GetSong
 };

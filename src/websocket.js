@@ -1,4 +1,4 @@
-import { UpdateSong, UpdateList, UpdateListeners } from './actions.js';
+import { UpdateSong, UpdateList, UpdateListeners, PushQueue } from './actions.js';
 
 //WEBSOCKET
 console.log('connecting to socket');
@@ -22,6 +22,9 @@ ws.onmessage = function onWSMessage(e) {
             break;
         case 'UPDATE_LISTENERS':
             UpdateListeners(message.count);
+            break;
+        case 'PUSH_QUEUE':
+            PushQueue(message.song);
             break;
         default:
             console.log('could not recognize message type ' + message.type);

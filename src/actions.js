@@ -49,4 +49,17 @@ function ToggleJP() {
     });
 }
 
-export { UpdateSong, UpdateList, UpdateListeners, TogglePlay, ToggleJP };
+function PushQueue(song) {
+    store.dispatch({
+        type: 'PUSH_QUEUE',
+        payload: {
+            song: song
+        }
+    });
+}
+
+export {
+    UpdateSong, UpdateList, UpdateListeners,
+    TogglePlay, ToggleJP,
+    PushQueue
+};

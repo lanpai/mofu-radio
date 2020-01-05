@@ -1,8 +1,8 @@
 // MOFU-RADIO REQUIREMENTS
-const { CurrentSong, CurrentQueue } = require('./QueueHandler.js');
+const { CurrentSong, CurrentQueue, Request, GetSong } = require('./QueueHandler.js');
 const Log = require('./Log.js');
 const server = require('./Server.js');
-const { Config } = require('./Data.js');
+const { db, Config, CanRequest } = require('./Data.js');
 
 // REQUIRING WS
 const WebSocket = require('ws');
@@ -63,6 +63,10 @@ wss.on('connection', function onWSConnection(ws, req) {
                                 type: 'MESSAGE',
                                 message: 'Song has been requested'
                             }));
+                            wsBroadcastImmediate({
+                                type: 'PUSH_QUEUE',
+                                song: GetSong(message.id)
+                            });
                         }
                         else {
                             ws.send(JSON.stringify({

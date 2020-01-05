@@ -47,6 +47,12 @@ function reducer(state = initialState, action) {
             return update(state, {
                 $toggle: [ 'jp' ]
             });
+        case 'PUSH_QUEUE':
+            return update(state, {
+                queue: {
+                    $push: [ action.payload.song ]
+                }
+            });
         default:
             return state;
     }
