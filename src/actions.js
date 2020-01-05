@@ -39,7 +39,7 @@ function UpdateListeners(count) {
 }
 
 function UpdateVolume(volume) {
-    audio.volume = volume;
+    audio.volume = Math.pow(volume, 3);
     store.dispatch({
         type: 'UPDATE_VOLUME',
         payload: {
