@@ -7,7 +7,9 @@ var queue = [];
 
 function PickSong() {
     // OLDEST SONG
-    return db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 }).head().value().id;
+    // floor(rand()^4 * length)
+    let sorted = db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 });
+    return sorted.get(Math.floor(Math.pow(Math.random(), 4) * sorted.size().value())).value().id;
 }
 
 function AddSong(id) {
