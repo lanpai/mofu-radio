@@ -11,7 +11,7 @@ const initialState = {
         listeners: 0
     },
     list: [],
-    volume: parseFloat(localStorage.getItem('volume')) || 0.1
+    volume: parseFloat(localStorage.getItem('volume')) || 0.5
 };
 
 function reducer(state = initialState, action) {
