@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import css from '../../css/element/Controls.scss';
 
 import { UpdateVolume, TogglePlay } from '../../actions.js';
+import audio from '../../audio.js';
 
 const mapStateToProps = state => {
     return {
@@ -33,6 +34,10 @@ class Controls extends Component {
             UpdateVolume(Math.min(this.props.volume + 0.05, 1));
         else
             UpdateVolume(Math.max(this.props.volume - 0.05, 0));
+    }
+
+    componentDidUpdate() {
+        audio.volume = Math.pow(this.props.volume, 3);
     }
 
     render() {

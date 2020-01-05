@@ -1,5 +1,4 @@
 import store from './store';
-import audio from './audio.js';
 
 let nextImg = null;
 
@@ -39,7 +38,6 @@ function UpdateListeners(count) {
 }
 
 function UpdateVolume(volume) {
-    audio.volume = Math.pow(volume, 3);
     store.dispatch({
         type: 'UPDATE_VOLUME',
         payload: {
