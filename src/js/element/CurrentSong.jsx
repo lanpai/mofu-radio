@@ -27,7 +27,7 @@ class CurrentSong extends Component {
             tags: this.props.currentSong.tags || '',
         };
 
-        if (!this.props.jp) {
+        if (!this.props.jp && this.props.currentSong.en) {
             metadata = {
                 artist: this.props.currentSong.en.artist || metadata.artist,
                 title: this.props.currentSong.en.title || metadata.title,

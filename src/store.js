@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 
 const initialState = {
     playing: false,
-    jp: true,
+    jp: localStorage.getItem('jp') === 'true',
     currentSong: {
     },
     queue: [],
@@ -52,6 +52,7 @@ function reducer(state = initialState, action) {
                 $toggle: [ 'playing' ]
             });
         case 'TOGGLE_JP':
+            localStorage.setItem('jp', !state.jp);
             return update(state, {
                 $toggle: [ 'jp' ]
             });
