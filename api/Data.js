@@ -56,7 +56,7 @@ function ReloadConfig() {
     config.read();
 }
 
-function AddSong(artist, title, file, options) {
+function AddSong(options) {
     // RELOADING DATABASE
     db.read();
 
@@ -67,10 +67,7 @@ function AddSong(artist, title, file, options) {
     // PUSHING SONG
     db.get('songs').push({
         id: id,
-        file: file,
-        artist: artist,
-        title: title,
-        options: options
+        ...options
     }).write();
 }
 

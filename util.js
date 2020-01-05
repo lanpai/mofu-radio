@@ -36,35 +36,54 @@ for (let file of files) {
         continue;
     }
 
-    let options = {};
+    let metadata = {
+        options: {},
+        en: {}
+    };
 
     // GATHERING METADATA
-    let artist = rls.question('Artist: ');
-    let title = rls.question('Title: ');
+    metadata.artist = rls.question('Artist: ');
+    metadata.title = rls.question('Title: ');
 
     let tags = rls.question('Tags: ');
     if (tags !== '')
-        options.tags = tags;
+        metadata.tags = tags;
+
+    // ENGLISH METADATA
+    let enArtist = rls.question('EN Artist: ');
+    if (enArtist !== '')
+        metadata.en.artist = enArtist;
+
+    let enTitle = rls.question('EN Title: ');
+    if (enTitle !== '')
+        metadata.en.title = enTitle;
+
+    let enTags = rls.question('EN Tags: ');
+    if (enTags !== '')
+        metadata.en.tags= enTags;
 
     // COVERARTARCHIVE
     let idCAA = rls.question('CoverArtArchive Album ID: ');
     if (idCAA !== '')
-        options.coverArtArchive = idCAA;
+        metadata.options.coverArtArchive = idCAA;
 
     // DETERMINING FILE NAME
-    let newFile = `${`${artist} - ${title}`.replace(/[\\\/:*?"<>|]/gi, '')}.mp3`;
+    let newFile = `${`${metadata.artist} - ${metadata.title}`.replace(/[\\\/:*?"<>|]/gi, '')}.mp3`;
     console.log(`New File: ${newFile}`);
 
+    metadata.file = newFile;
+
     // UPDATING EXISTING
-    if (db.read().get('songs').filter({ artist: artist, title: title }).size().value() > 0) {
+    /*if (db.read().get('songs').filter({ artist: artist, title: title }).size().value() > 0) {
         if (rls.question('Given entry already exists! Would you like to update it? (y/n) [n]: ') == 'y') {
             fs.renameSync(`${Config('directories.queue')}/${file}`, `${Config('directories.disc')}/${newFile}`);
             db.read().get('songs').find({ artist: artist, title: title }).assign({ options: options }).write();
         }
         continue;
-    }
+    }*/
 
     // ADD NEW SONG
     fs.renameSync(`${Config('directories.queue')}/${file}`, `${Config('directories.disc')}/${newFile}`);
-    AddSong(artist, title, newFile, options);
+    //AddSong(artist, title, newFile, options);
+    AddSong(metadata);
 }
