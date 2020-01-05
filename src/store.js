@@ -10,7 +10,8 @@ const initialState = {
     stats: {
         listeners: 0
     },
-    list: []
+    list: [],
+    volume: parseFloat(localStorage.getItem('volume')) || 0.1
 };
 
 function reducer(state = initialState, action) {
@@ -37,6 +38,13 @@ function reducer(state = initialState, action) {
                     listeners: {
                         $set: action.payload.count
                     }
+                }
+            });
+        case 'UPDATE_VOLUME':
+            localStorage.setItem('volume', action.payload.volume);
+            return update(state, {
+                volume: {
+                    $set: action.payload.volume
                 }
             });
         case 'TOGGLE_PLAY':

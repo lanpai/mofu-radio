@@ -3,13 +3,15 @@ import { connect } from 'react-redux';
 
 import css from '../../css/element/Controls.scss';
 
-import { TogglePlay } from '../../actions.js';
-import audio from '../../audio.js';
+import { UpdateVolume, TogglePlay } from '../../actions.js';
 
 const mapStateToProps = state => {
     return {
-        playing: state.playing
+        playing: state.playing,
+        volume: state.volume
     }
+
+    this.volumeScroll = this.volumeScroll.bind(this);
 };
 
 class Controls extends Component {
@@ -22,7 +24,15 @@ class Controls extends Component {
     }
 
     volumeChange(e) {
-        audio.volume = e.target.value;
+        UpdateVolume(e.target.value);
+    }
+
+    volumeScroll(e) {
+        let delta = e.deltaY || e.wheelDelta;
+        if (delta < 0)
+            UpdateVolume(Math.min(this.props.volume + 0.05, 1));
+        else
+            UpdateVolume(Math.max(this.props.volume - 0.05, 0));
     }
 
     render() {
@@ -48,7 +58,7 @@ class Controls extends Component {
                     </svg>
                 </div>
                 <div className='icon' style={{ width: '50%', flex: 4 }}>
-                    <input onInput={ this.volumeChange } type='range' min='0' max='1' step='0.01' className='volume' id='volume' />
+                    <input ref='volume' onInput={ this.volumeChange } onMouseWheel={ this.volumeScroll.bind(this) } onWheel={ this.volumeScroll.bind(this) } value={ this.props.volume } type='range' min='0' max='1' step='0.01' className='volume' id='volume' />
                 </div>
             </div>
         );

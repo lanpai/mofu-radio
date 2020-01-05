@@ -1,4 +1,5 @@
 import store from './store';
+import audio from './audio.js';
 
 let nextImg = null;
 
@@ -37,6 +38,16 @@ function UpdateListeners(count) {
     });
 }
 
+function UpdateVolume(volume) {
+    audio.volume = volume;
+    store.dispatch({
+        type: 'UPDATE_VOLUME',
+        payload: {
+            volume: volume
+        }
+    });
+}
+
 function TogglePlay() {
     store.dispatch({
         type: 'TOGGLE_PLAY'
@@ -59,7 +70,7 @@ function PushQueue(song) {
 }
 
 export {
-    UpdateSong, UpdateList, UpdateListeners,
+    UpdateSong, UpdateList, UpdateListeners, UpdateVolume,
     TogglePlay, ToggleJP,
     PushQueue
 };
