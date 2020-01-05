@@ -7,8 +7,6 @@ import css from './css/main.scss';
 import { Provider } from 'react-redux';
 import store from './store';
 
-import audio from './audio.js';
-
 const wrapper = document.getElementById('main-interface');
 wrapper ? ReactDOM.render(
     <Provider store={ store }>

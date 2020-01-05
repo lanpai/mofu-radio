@@ -12,8 +12,11 @@ const mapStateToProps = state => {
         volume: state.volume
     }
 
+    this.onKey = this.onKey.bind(this);
     this.volumeScroll = this.volumeScroll.bind(this);
 };
+
+var controls = null;
 
 class Controls extends Component {
     constructor() {
@@ -26,6 +29,30 @@ class Controls extends Component {
 
     volumeChange(e) {
         UpdateVolume(e.target.value);
+        e.preventDefault();
+    }
+
+    onKey(e) {
+        if (document.activeElement.tagName !== 'INPUT')
+            switch (e.keyCode) {
+                case 32: // SPACEBAR
+                    TogglePlay();
+                    e.preventDefault();
+                    break;
+                case 38: // ARROW UP
+                    UpdateVolume(Math.min(controls.props.volume + 0.05, 1));
+                    e.preventDefault();
+                    break;
+                case 40: // ARROW DOWN
+                    UpdateVolume(Math.max(controls.props.volume - 0.05, 0));
+                    e.preventDefault();
+                    break;
+            }
+    }
+
+    componentDidMount() {
+        window.addEventListener('keydown', this.onKey);
+        controls = this;
     }
 
     volumeScroll(e) {
