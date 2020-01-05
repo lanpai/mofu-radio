@@ -2,6 +2,7 @@
 const { db, Config, ReloadDB, AddRequest } = require('./Data.js');
 const Log = require('./Log.js');
 
+var currentSong = null;
 var queue = [];
 
 function PickSong() {
@@ -35,7 +36,16 @@ function NextSong() {
     for (let i = 0; i < deltaSize; i++)
         AddSong(PickSong());
 
-    return queue.shift();
+    currentSong = queue.shift();
+    return currentSong;
+}
+
+function CurrentSong() {
+    return currentSong;
+}
+
+function CurrentQueue() {
+    return queue;
 }
 
 function Request(id, ip) {
@@ -44,6 +54,9 @@ function Request(id, ip) {
 }
 
 module.exports = {
-    queue, NextSong,
+    queue,
+    NextSong,
+    CurrentSong,
+    CurrentQueue,
     Request
 };

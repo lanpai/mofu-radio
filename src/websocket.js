@@ -1,8 +1,12 @@
-import { UpdateSong, UpdateList } from './actions.js';
+import { UpdateSong, UpdateList, UpdateListeners } from './actions.js';
 
 //WEBSOCKET
 console.log('connecting to socket');
-var ws = new WebSocket('wss://' + location.host);
+var ws;
+if (location.protocol === 'https:')
+    ws = new WebSocket('wss://' + location.host);
+else
+    ws = new WebSocket('ws://' + location.host);
 
 ws.onmessage = function onWSMessage(e) {
     let message = JSON.parse(e.data);
@@ -15,6 +19,9 @@ ws.onmessage = function onWSMessage(e) {
             break;
         case 'UPDATE_LIST':
             UpdateList(message.list);
+            break;
+        case 'UPDATE_LISTENERS':
+            UpdateListeners(message.count);
             break;
         default:
             console.log('could not recognize message type ' + message.type);

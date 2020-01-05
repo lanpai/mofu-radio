@@ -31,6 +31,14 @@ function reducer(state = initialState, action) {
                     $set: action.payload.list
                 }
             });
+        case 'UPDATE_LISTENERS':
+            return update(state, {
+                stats: {
+                    listeners: {
+                        $set: action.payload.count
+                    }
+                }
+            });
         case 'TOGGLE_PLAY':
             return update(state, {
                 $toggle: [ 'playing' ]

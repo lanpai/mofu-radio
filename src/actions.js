@@ -6,8 +6,7 @@ function UpdateSong(currentSong, queue) {
     for (let song of queue) {
         if (song.options) {
             nextImg = new Image();
-            nextImg.src = `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front`
-
+            nextImg.src = `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front`;
         }
     }
 
@@ -29,6 +28,15 @@ function UpdateList(list) {
     });
 }
 
+function UpdateListeners(count) {
+    store.dispatch({
+        type: 'UPDATE_LISTENERS',
+        payload: {
+            count: count
+        }
+    });
+}
+
 function TogglePlay() {
     store.dispatch({
         type: 'TOGGLE_PLAY'
@@ -41,4 +49,4 @@ function ToggleJP() {
     });
 }
 
-export { UpdateSong, UpdateList, TogglePlay, ToggleJP };
+export { UpdateSong, UpdateList, UpdateListeners, TogglePlay, ToggleJP };

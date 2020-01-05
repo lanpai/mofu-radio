@@ -13,8 +13,7 @@ store.subscribe(function onStateChange() {
     }
     else if (!store.getState().playing && isPlaying) {
         isPlaying = false;
-        audio.pause();
-        audio.removeAttribute('src');
+        audio.src = '';
     }
 });
 
