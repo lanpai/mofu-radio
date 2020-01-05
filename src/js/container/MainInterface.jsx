@@ -21,7 +21,19 @@ const mapStateToProps = state => {
 
 const tabsConfig = [
     [ 'queue', <Queue /> ],
-    [ 'request', <Request /> ]
+    [ 'request', <Request /> ],
+    [ 'info',
+        <div style={{ textAlign: 'center' }}>
+            <h3>Song Request Form</h3>
+            <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https://forms.gle/mp3qZX9hEwnhm53V6</a>
+            <br />
+            <br />
+            <h3>GitHub</h3>
+            <a href='https://github.com/lanpai/mofu-radio'>https://github.com/lanpai/mofu-radio</a>
+            <br />
+            <br />
+            <i>made with ♥ by lanpai</i>
+        </div> ]
 ];
 
 class MainInterface extends Component {
@@ -47,6 +59,10 @@ class MainInterface extends Component {
                         </Box>
                     </div>
                 </div>
+                <Box style={{ width: 'calc(100% - 4vh)', textAlign: 'center' }}>
+                    <div className='flex-row collapsible'>
+                    </div>
+                </Box>
             </div>
         );
     }
