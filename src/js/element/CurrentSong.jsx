@@ -45,6 +45,8 @@ class CurrentSong extends Component {
         if (this.props.jp)
             lang = 'jp';
 
+        document.title = `${metadata.title} by ${metadata.artist} (mofu-radio)`;
+
         return (
             <>
                 <figure className={ this.props.playing ? 'albumArt' : 'albumArt grayscale' }>
