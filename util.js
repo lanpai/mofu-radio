@@ -31,8 +31,9 @@ for (let file of files) {
     if (rls.question('Skip this song? (y/n) [n]: ') === 'y')
         continue;
 
-    if (path.extname(file) !== '.mp3') {
-        console.log('File must be an mp3!');
+    let filePath = path.parse(file);
+    if (filePath.ext !== '.mp3') {
+        console.log('File isn\'t an mp3!');
         continue;
     }
 
