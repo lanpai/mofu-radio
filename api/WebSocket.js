@@ -26,7 +26,7 @@ const fuseOptions = {
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', function onWSConnection(ws, req) {
-    let remoteAddr = req.headers['X-Real-IP'] || req.connection.remoteAddress;
+    let remoteAddr = req.headers['x-real-ip'] || req.connection.remoteAddress;
     Log(`received new socket connection (${remoteAddr})`, 4);
 
     // SENDING INITIAL DATA
