@@ -9,7 +9,7 @@ function PickSong() {
     // OLDEST SONG
     // floor(rand()^4 * length)
     let sorted = db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 });
-    return sorted.get(Math.floor(Math.pow(Math.random(), 4) * sorted.size().value())).value().id;
+    return sorted.get(Math.floor(Math.pow(Math.random(), 3) * sorted.size().value() * 0.5)).value().id;
 }
 
 function AddSong(id) {
