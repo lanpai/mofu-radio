@@ -1,3 +1,24 @@
 .song {
     display: flex;
 }
+
+.filter {
+    background-color: rgba(255, 255, 255, 0.9);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.filter>*>input {
+    width: calc(100% - 5vh);
+    border-width: 0;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 2vh;
+    background-color: transparent;
+    opacity: 0.6;
+}
+
+.filter>*>div {
+    display: inline;
+    vertical-align: middle;
+}

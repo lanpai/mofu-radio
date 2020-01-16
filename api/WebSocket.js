@@ -31,6 +31,7 @@ wss.on('connection', function onWSConnection(ws, req) {
 
     // SENDING INITIAL DATA
     ws.send(JSON.stringify({ type: 'UPDATE_SONG', currentSong: CurrentSong(), queue: CurrentQueue() }));
+    ws.send(JSON.stringify({ type: 'UPDATE_LISTENERS', count: listenerCount }));
 
     ws.on('message', function onIncomingMessage(message) {
         try {
@@ -120,6 +121,16 @@ async function wsBroadcastImmediate(message) {
     })
 }
 
+var listenerCount = 0;
+function UpdateListenerCount(count) {
+    listenerCount = count;
+    wsBroadcastImmediate({
+        type: 'UPDATE_LISTENERS',
+        count: listenerCount
+    });
+}
+
 module.exports = {
-    wsBroadcast, wsBroadcastImmediate
+    wsBroadcast, wsBroadcastImmediate,
+    UpdateListenerCount
 };

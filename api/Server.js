@@ -99,10 +99,7 @@ var server = http.createServer(
                 
                 Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
 
-                wsBroadcastImmediate({
-                    type: 'UPDATE_LISTENERS',
-                    count: listeners.length
-                });
+                UpdateListenerCount(listeners.length);
 
                 break;
             default:
@@ -176,10 +173,7 @@ function handleChunk() {
         }
     }
     if (isCleaned)
-        wsBroadcastImmediate({
-            type: 'UPDATE_LISTENERS',
-            count: listeners.length
-        });
+        UpdateListenerCount(listeners.length);
 }
 
 function encode(input, callback) {
@@ -274,4 +268,4 @@ server.listen(Config('network.port'),
 module.exports = server;
 
 // REQUIRING WSBROADCAST AFTER SERVER INITIALIZATION
-const { wsBroadcast, wsBroadcastImmediate } = require('./WebSocket.js');
+const { wsBroadcast, wsBroadcastImmediate, UpdateListenerCount } = require('./WebSocket.js');

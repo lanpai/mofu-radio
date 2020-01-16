@@ -19,9 +19,9 @@ class Request extends Component {
         super();
 
         this.state = {
-            request: [],
             type: 'new'
         };
+        this.filter = '';
 
         this.fetchList = this.fetchList.bind(this);
         this.setType = this.setType.bind(this);
@@ -32,6 +32,7 @@ class Request extends Component {
         if (this.timeout !== null)
             clearTimeout(this.timeout);
         this.timeout = setTimeout(FetchList.bind(null, e.target.value), 100);
+        this.filter = e.target.value;
     }
 
     setType(type) {
@@ -49,6 +50,9 @@ class Request extends Component {
                 source = _.sortBy(source, [ 'id' ]).reverse();
                 break;
         }
+        let currentLength = source.length;
+        if (this.filter !== '*')
+            source = _.take(source, 20);
         for (let song of source) {
             let metadata = {
                 artist: song.artist || '',
@@ -92,11 +96,18 @@ class Request extends Component {
                 </>
             );
         }
+        if (source.length < currentLength) {
+            list.push(
+                <>
+                    <i>and { currentLength - source.length } more... (Filter for '*' for all results)</i>
+                </>
+            );
+        }
 
         return (
             <>
-                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', position: 'sticky', top: '0' }}>
-                    <div className='textbox' style={ this.props.style }>
+                <div className='filter'>
+                    <div>
                         <input type='text' placeholder='Filter' onInput={ this.fetchList } />
                         <div className={ this.state.type === 'new' ? 'button active' : 'button' } onClick={ () => { this.setType('new') } }>
                             <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
