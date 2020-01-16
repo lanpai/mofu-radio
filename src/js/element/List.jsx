@@ -24,11 +24,15 @@ class Request extends Component {
             type: 'list'
         };
 
+        this.fetchList = this.fetchList.bind(this);
         this.setType = this.setType.bind(this);
+        this.timeout = null;
     }
 
     fetchList(e) {
-        FetchList(e.target.value);
+        if (this.timeout !== null)
+            clearTimeout(this.timeout);
+        this.timeout = setTimeout(FetchList.bind(null, e.target.value), 100);
     }
 
     setType(type) {
