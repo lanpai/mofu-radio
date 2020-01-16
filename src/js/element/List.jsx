@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import css from '../../css/element/List.scss';
 
@@ -9,9 +10,7 @@ import { FetchList, RequestSong } from '../../websocket.js';
 const mapStateToProps = state => {
     return {
         jp: state.jp,
-        list: state.list,
-        top: state.top,
-        new: state.new
+        list: state.list
     }
 };
 
@@ -44,7 +43,16 @@ class Request extends Component {
 
     render() {
         let list = [];
-        for (let song of this.props[this.state.type]) {
+        let source = this.props.list;
+        switch (this.state.type) {
+            case 'top':
+                source = _.sortBy(source, [ 'timesReq' ]).filter(song => { return song.timesReq > 0 }).reverse();
+                break;
+            case 'new':
+                source = _.sortBy(source, [ 'id' ]).reverse();
+                break;
+        }
+        for (let song of source) {
             let metadata = {
                 artist: song.artist || '',
                 title: song.title || '',

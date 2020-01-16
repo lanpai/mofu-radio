@@ -105,6 +105,8 @@ function AddRequest(id, ip) {
         ip: ip,
         timestamp: Date.now()
     }).write();
+    let song = db.get('songs').find({ id: id });
+    song.assign({ timesReq: song.value().timesReq ? song.value().timesReq + 1 : 1 }).write();
 }
 
 module.exports = {

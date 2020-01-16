@@ -20,12 +20,6 @@ ws.onmessage = function onWSMessage(e) {
         case 'UPDATE_LIST':
             UpdateList(message.list);
             break;
-        case 'UPDATE_TOP':
-            UpdateTop(message.list);
-            break;
-        case 'UPDATE_NEW':
-            UpdateNew(message.list);
-            break;
         case 'UPDATE_LISTENERS':
             UpdateListeners(message.count);
             break;
@@ -38,20 +32,15 @@ ws.onmessage = function onWSMessage(e) {
     }
 }
 
-ws.onopen = function onWSOpen(e) {
-    ws.send(JSON.stringify({
-        type: 'FETCH_TOP'
-    }));
-    ws.send(JSON.stringify({
-        type: 'FETCH_NEW'
-    }));
-}
-
 function FetchList(filter) {
     ws.send(JSON.stringify({
         type: 'FETCH_LIST',
-        filter: filter
+        filter: filter === '' ? '*' : filter
     }));
+}
+
+ws.onopen = function onWSOpen(e) {
+    FetchList('*');
 }
 
 function RequestSong(id) {
