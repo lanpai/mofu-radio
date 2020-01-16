@@ -63,18 +63,26 @@ class Request extends Component {
             }
 
             list.push(
-                <div key={ song.id }>
-                    <Marquee>
-                        <h3>{ metadata.title }</h3>
-                    </Marquee>
-                    <Marquee>
-                        <h3 style={{ fontWeight: 'normal', color: 'deeppink' }}>
-                            { metadata.artist }
-                        </h3>
-                    </Marquee>
-                    <h3 className='button' onClick={ () => RequestSong(song.id) }>Request</h3>
+                <>
+                    <div key={ song.id } className='song'>
+                        <div style={{ width: 'calc(100% - 2.5vh)' }}>
+                            <Marquee>
+                                <h3>{ metadata.title }</h3>
+                            </Marquee>
+                            <Marquee>
+                                <h3 style={{ fontWeight: 'normal', color: 'deeppink' }}>
+                                    { metadata.artist }
+                                </h3>
+                            </Marquee>
+                        </div>
+                        <div className='button'>
+                            <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
+                                <path fill='#202020' d='M19,11H15V15H13V11H9V9H13V5H15V9H19M20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M4,6H2V20A2,2 0 0,0 4,22H18V20H4V6Z' />
+                            </svg>
+                        </div>
+                    </div>
                     <hr />
-                </div>
+                </>
             );
         }
 
@@ -89,7 +97,7 @@ class Request extends Component {
                     </div>
                     <div className={ this.state.type === 'top' ? 'button active' : 'button' } onClick={ () => { this.setType('top') } }>
                         <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
-                            <path fill="#202020" d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" />
+                            <path fill='#202020' d='M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z' />
                         </svg>
                     </div>
                 </div>
