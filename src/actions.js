@@ -28,6 +28,24 @@ function UpdateList(list) {
     });
 }
 
+function UpdateTop(list) {
+    store.dispatch({
+        type: 'UPDATE_TOP',
+        payload: {
+            list: list
+        }
+    });
+}
+
+function UpdateNew(list) {
+    store.dispatch({
+        type: 'UPDATE_NEW',
+        payload: {
+            list: list
+        }
+    });
+}
+
 function UpdateListeners(count) {
     store.dispatch({
         type: 'UPDATE_LISTENERS',
@@ -68,7 +86,7 @@ function PushQueue(song) {
 }
 
 export {
-    UpdateSong, UpdateList, UpdateListeners, UpdateVolume,
+    UpdateSong, UpdateTop, UpdateNew, UpdateList, UpdateListeners, UpdateVolume,
     TogglePlay, ToggleJP,
     PushQueue
 };

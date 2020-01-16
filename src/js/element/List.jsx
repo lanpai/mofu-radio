@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import css from '../../css/element/Request.scss';
+import css from '../../css/element/List.scss';
 
 import Marquee from '../container/Marquee.jsx';
-import Textbox from './Textbox.jsx';
-import { FetchList, RequestSong } from '../../websocket.js';
+import { RequestSong } from '../../websocket.js';
 
 const mapStateToProps = state => {
     return {
-        jp: state.jp,
-        list: state.list
+        jp: state.jp
     }
 };
 
@@ -21,10 +19,6 @@ class Request extends Component {
         this.state = {
             request: []
         };
-    }
-
-    fetchList(e) {
-        FetchList(e.target.value);
     }
 
     render() {
@@ -60,8 +54,6 @@ class Request extends Component {
 
         return (
             <>
-                <Textbox placeholder='Filter...' onInput={ this.fetchList } />
-                <hr />
                 <div>
                     { list }
                 </div>

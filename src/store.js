@@ -11,6 +11,8 @@ const initialState = {
         listeners: 0
     },
     list: [],
+    top: [],
+    new: [],
     volume: parseFloat(localStorage.getItem('volume')) || 0.5
 };
 
@@ -29,6 +31,18 @@ function reducer(state = initialState, action) {
         case 'UPDATE_LIST':
             return update(state, {
                 list: {
+                    $set: action.payload.list
+                }
+            });
+        case 'UPDATE_TOP':
+            return update(state, {
+                top: {
+                    $set: action.payload.list
+                }
+            });
+        case 'UPDATE_NEW':
+            return update(state, {
+                new: {
                     $set: action.payload.list
                 }
             });

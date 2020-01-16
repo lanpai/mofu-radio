@@ -53,6 +53,25 @@ wss.on('connection', function onWSConnection(ws, req) {
                         list: result
                     }));
                     return;
+                case 'FETCH_TOP':
+                    let topSongs = db.read().get('songs').sortBy(song => {
+                        return db.get('requests').filter({ id: song.id }).size().value()
+                    }).filter(song => {
+                        return db.get('requests').filter({ id: song.id }).size().value() > 0
+                    }).reverse().take(10).value();
+                    ws.send(JSON.stringify({
+                        type: 'UPDATE_TOP',
+                        list: topSongs
+                    }));
+                    return;
+                case 'FETCH_NEW':
+                    let newSongs = db.read().get('songs').sortBy(song => {
+                        return song.id
+                    }).reverse().take(5).value();
+                    ws.send(JSON.stringify({
+                        type: 'UPDATE_NEW',
+                        list: newSongs
+                    }));
                 case 'REQUEST':
                     if (message.id) {
                         // CHECKING IS USER CAN REQUEST

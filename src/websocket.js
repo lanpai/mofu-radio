@@ -1,4 +1,4 @@
-import { UpdateSong, UpdateList, UpdateListeners, PushQueue } from './actions.js';
+import { UpdateSong, UpdateList, UpdateTop, UpdateNew, UpdateListeners, PushQueue } from './actions.js';
 
 //WEBSOCKET
 console.log('connecting to socket');
@@ -20,6 +20,12 @@ ws.onmessage = function onWSMessage(e) {
         case 'UPDATE_LIST':
             UpdateList(message.list);
             break;
+        case 'UPDATE_TOP':
+            UpdateTop(message.list);
+            break;
+        case 'UPDATE_NEW':
+            UpdateNew(message.list);
+            break;
         case 'UPDATE_LISTENERS':
             UpdateListeners(message.count);
             break;
@@ -30,6 +36,15 @@ ws.onmessage = function onWSMessage(e) {
             console.log('could not recognize message type ' + message.type);
             break;
     }
+}
+
+ws.onopen = function onWSOpen(e) {
+    ws.send(JSON.stringify({
+        type: 'FETCH_TOP'
+    }));
+    ws.send(JSON.stringify({
+        type: 'FETCH_NEW'
+    }));
 }
 
 function FetchList(filter) {
