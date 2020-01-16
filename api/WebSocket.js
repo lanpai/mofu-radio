@@ -11,9 +11,9 @@ const WebSocket = require('ws');
 const Fuse = require('fuse.js');
 const fuseOptions = {
     shouldSort: true,
-    threshold: 0.8,
+    threshold: 0.4,
     location: 0,
-    distance: 10,
+    distance: 8,
     maxPatternLength: 32,
     minMatchCharLength: 1,
     keys: [
