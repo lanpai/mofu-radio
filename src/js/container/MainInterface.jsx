@@ -67,16 +67,14 @@ class MainInterface extends Component {
                 <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
                     <path fill='#202020' d='M13,12H20V13.5H13M13,9.5H20V11H13M13,14.5H20V16H13M21,4H3A2,2 0 0,0 1,6V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V6A2,2 0 0,0 21,4M21,19H12V6H21' />
                 </svg>,
-                <div style={{ textAlign: 'center' }}>
+                <div>
                     <h3>Song Request Form</h3>
                     <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https://forms.gle/mp3qZX9hEwnhm53V6</a>
                     <br />
                     <br />
-                    <h3>GitHub</h3>
-                    <a href='https://github.com/lanpai/mofu-radio'>https://github.com/lanpai/mofu-radio</a>
-                    <br />
-                    <br />
                     <i>made with ♥ by lanpai</i>
+                    <br />
+                    <a href='https://github.com/lanpai/mofu-radio'>https://github.com/lanpai/mofu-radio</a>
                 </div> ]
         ];
         return (
