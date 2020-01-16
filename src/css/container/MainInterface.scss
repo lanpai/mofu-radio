@@ -27,3 +27,16 @@
     0% { opacity: 0 }
     100% { opacity: 1 }
 }
+
+.textbox>input {
+    width: calc(100% - 5vh);
+    border-width: 0;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 2vh;
+    background-color: transparent;
+    opacity: 0.6;
+}
+.textbox>div {
+    display: inline;
+    vertical-align: middle;
+}
