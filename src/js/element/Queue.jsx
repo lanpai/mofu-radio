@@ -23,12 +23,14 @@ class Queue extends Component {
             let metadata = {
                 artist: song.artist || '',
                 title: song.title || '',
+                tags: song.tags || ''
             };
 
             if (!this.props.jp) {
                 metadata = {
                     artist: song.en.artist || metadata.artist,
                     title: song.en.title || metadata.title,
+                    tags: song.en.tags || metadata.tags
                 };
             }
 
@@ -40,6 +42,11 @@ class Queue extends Component {
                     <Marquee>
                         <h3 style={{ fontWeight: 'normal', color: 'deeppink' }}>
                             { metadata.artist }
+                        </h3>
+                    </Marquee>
+                    <Marquee>
+                        <h3 style={{ fontSize: '1.6vh', lineHeight: '2.6vh', fontWeight: 'normal' }}>
+                            { metadata.tags }
                         </h3>
                     </Marquee>
                     <hr />

@@ -53,12 +53,14 @@ class Request extends Component {
             let metadata = {
                 artist: song.artist || '',
                 title: song.title || '',
+                tags: song.tags || ''
             };
 
             if (!this.props.jp) {
                 metadata = {
                     artist: song.en.artist || metadata.artist,
                     title: song.en.title || metadata.title,
+                    tags: song.en.tags || metadata.tags
                 };
             }
 
@@ -72,6 +74,11 @@ class Request extends Component {
                             <Marquee>
                                 <h3 style={{ fontWeight: 'normal', color: 'deeppink' }}>
                                     { metadata.artist }
+                                </h3>
+                            </Marquee>
+                            <Marquee>
+                                <h3 style={{ fontSize: '1.6vh', lineHeight: '2.6vh', fontWeight: 'normal' }}>
+                                    { metadata.tags }
                                 </h3>
                             </Marquee>
                         </div>
@@ -88,20 +95,22 @@ class Request extends Component {
 
         return (
             <>
-                <div className='textbox' style={ this.props.style }>
-                    <input type='text' placeholder='Filter' onInput={ this.fetchList } />
-                    <div className={ this.state.type === 'new' ? 'button active' : 'button' } onClick={ () => { this.setType('new') } }>
-                        <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
-                            <path fill='currentColor' d='M20,4C21.11,4 22,4.89 22,6V18C22,19.11 21.11,20 20,20H4C2.89,20 2,19.11 2,18V6C2,4.89 2.89,4 4,4H20M8.5,15V9H7.25V12.5L4.75,9H3.5V15H4.75V11.5L7.3,15H8.5M13.5,10.26V9H9.5V15H13.5V13.75H11V12.64H13.5V11.38H11V10.26H13.5M20.5,14V9H19.25V13.5H18.13V10H16.88V13.5H15.75V9H14.5V14A1,1 0 0,0 15.5,15H19.5A1,1 0 0,0 20.5,14Z' />
-                        </svg>
+                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', position: 'sticky', top: '0' }}>
+                    <div className='textbox' style={ this.props.style }>
+                        <input type='text' placeholder='Filter' onInput={ this.fetchList } />
+                        <div className={ this.state.type === 'new' ? 'button active' : 'button' } onClick={ () => { this.setType('new') } }>
+                            <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
+                                <path fill='currentColor' d='M20,4C21.11,4 22,4.89 22,6V18C22,19.11 21.11,20 20,20H4C2.89,20 2,19.11 2,18V6C2,4.89 2.89,4 4,4H20M8.5,15V9H7.25V12.5L4.75,9H3.5V15H4.75V11.5L7.3,15H8.5M13.5,10.26V9H9.5V15H13.5V13.75H11V12.64H13.5V11.38H11V10.26H13.5M20.5,14V9H19.25V13.5H18.13V10H16.88V13.5H15.75V9H14.5V14A1,1 0 0,0 15.5,15H19.5A1,1 0 0,0 20.5,14Z' />
+                            </svg>
+                        </div>
+                        <div className={ this.state.type === 'top' ? 'button active' : 'button' } onClick={ () => { this.setType('top') } }>
+                            <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
+                                <path fill='#202020' d='M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z' />
+                            </svg>
+                        </div>
                     </div>
-                    <div className={ this.state.type === 'top' ? 'button active' : 'button' } onClick={ () => { this.setType('top') } }>
-                        <svg style={{ width: '2.5vh', height: '2.5vh' }} viewBox='0 0 24 24'>
-                            <path fill='#202020' d='M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z' />
-                        </svg>
-                    </div>
+                    <hr />
                 </div>
-                <hr />
                 <div>
                     { list }
                 </div>

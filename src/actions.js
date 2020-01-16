@@ -1,12 +1,12 @@
 import store from './store';
 
-let nextImg = null;
+let imgCache = [];
 
 function UpdateSong(currentSong, queue) {
     for (let song of queue) {
         if (song.options) {
-            nextImg = new Image();
-            nextImg.src = `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front`;
+            imgCache.push(new Image());
+            imgCache[imgCache.length - 1].src = `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front`;
         }
     }
 
