@@ -4,6 +4,7 @@ db.json
 disc/
 queue/
 tmp/
+package-lock.json
 
 # Logs
 logs
