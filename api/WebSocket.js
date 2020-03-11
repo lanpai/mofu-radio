@@ -45,11 +45,86 @@ wss.on('connection', function onWSConnection(ws, req) {
                 case 'FETCH_LIST':
                     // FUZZY SEARCHING THROUGH DATABASE
                     let filter = message.filter || '*';
+                    let filterArr = [];
+                    let filtered = db.read().get('songs');
                     let result = [];
+                    
+                    // FILTER PROCESSING
+                    let regexp = /[^\s"]+|"([^"]*)"/gi;
+                    let match;
+                    do {
+                        match = regexp.exec(filter);
+                        if (match != null)
+                            filterArr.push(match[1] ? match[1] : match[0]);
+                    }
+                    while (match != null);
+
+                    let i = 0;
+                    for (; i < filterArr.length; i++) {
+                        let keyval = filterArr[i].split(':');
+                        if (keyval.length > 1) {
+                            let [ key, val ] = keyval;
+                            switch (key) {
+                                case 'id':
+                                    val = val.split(',');
+                                    filtered = filtered.filter(song => {
+                                        for (let id of val)
+                                            if (id == `${song.id}`)
+                                                return true;
+                                        return false;
+                                    });
+                                    break;
+                                case 'artist':
+                                    val = val.toLowerCase();
+                                    filtered = filtered.filter(song => {
+                                        return (song.artist ?
+                                                song.artist.toLowerCase().indexOf(val) != -1 :
+                                                false) ||
+                                            (song.en.artist ?
+                                                song.en.artist.toLowerCase().indexOf(val) != -1 :
+                                                false
+                                            );
+                                    });
+                                    break;
+                                case 'title':
+                                    val = val.toLowerCase();
+                                    filtered = filtered.filter(song => {
+                                        return (song.title ?
+                                                song.title.toLowerCase().indexOf(val) != -1 :
+                                                false) ||
+                                            (song.en.title ?
+                                                song.en.title.toLowerCase().indexOf(val) != -1 :
+                                                false
+                                            );
+                                    });
+                                    break;
+                                case 'tags':
+                                    val = val.toLowerCase();
+                                    filtered = filtered.filter(song => {
+                                        return (song.tags ?
+                                                song.tags.toLowerCase().indexOf(val) != -1 :
+                                                false) ||
+                                            (song.en.tags ?
+                                                song.en.tags.toLowerCase().indexOf(val) != -1 :
+                                                false
+                                            );
+                                    });
+                                    break;
+                            }
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    filterArr.splice(0, i);
+
+                    filter = filterArr.join(' ');
+                    if (filter == '') filter = '*';
+                    
                     if (filter === '*')
-                        result = db.read().get('songs').value();
+                        result = filtered.value();
                     else {
-                        let fuse = new Fuse(db.read().get('songs').value(), fuseOptions);
+                        let fuse = new Fuse(filtered.value(), fuseOptions);
                         result = fuse.search(filter);
                     }
                     ws.send(JSON.stringify({
