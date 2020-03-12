@@ -76,6 +76,15 @@ function ToggleJP() {
     });
 }
 
+function ToggleFavorite(id) {
+    store.dispatch({
+        type: 'TOGGLE_FAVORITE',
+        payload: {
+            id: id
+        }
+    });
+}
+
 function PushQueue(song) {
     store.dispatch({
         type: 'PUSH_QUEUE',
@@ -87,6 +96,6 @@ function PushQueue(song) {
 
 export {
     UpdateSong, UpdateTop, UpdateNew, UpdateList, UpdateListeners, UpdateVolume,
-    TogglePlay, ToggleJP,
+    TogglePlay, ToggleJP, ToggleFavorite,
     PushQueue
 };

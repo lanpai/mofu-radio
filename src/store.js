@@ -13,7 +13,8 @@ const initialState = {
     list: [],
     top: [],
     new: [],
-    volume: parseFloat(localStorage.getItem('volume')) || 0.5
+    volume: parseFloat(localStorage.getItem('volume')) || 0.5,
+    favorites: JSON.parse(localStorage.getItem('favorites')) || []
 };
 
 function reducer(state = initialState, action) {
@@ -70,6 +71,25 @@ function reducer(state = initialState, action) {
             return update(state, {
                 $toggle: [ 'jp' ]
             });
+        case 'TOGGLE_FAVORITE':
+            let newState;
+            let index = state.favorites.indexOf(action.payload.id);
+            if (index == -1) {
+                newState = update(state, {
+                    favorites: {
+                        $push: [ action.payload.id ]
+                    }
+                });
+            }
+            else {
+                newState = update(state, {
+                    favorites: {
+                        $splice: [[ index, 1 ]]
+                    }
+                });
+            }
+            localStorage.setItem('favorites', JSON.stringify(newState.favorites));
+            return newState;
         case 'PUSH_QUEUE':
             return update(state, {
                 queue: {
