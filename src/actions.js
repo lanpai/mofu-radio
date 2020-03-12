@@ -6,7 +6,7 @@ function UpdateSong(currentSong, queue) {
     for (let song of queue) {
         if (song.options) {
             imgCache.push(new Image());
-            imgCache[imgCache.length - 1].src = `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front`;
+            imgCache[imgCache.length - 1].src = queue[0].options.coverArtArchive ? `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front` : '/default.png';
         }
     }
 

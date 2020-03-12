@@ -37,7 +37,7 @@ class CurrentSong extends Component {
 
         let albumArt = '';
         if (this.props.currentSong.options)
-            albumArt = `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front`
+            albumArt = this.props.currentSong.options.coverArtArchive ? `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front` : '/default.png';
 
         document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
 
