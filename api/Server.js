@@ -162,8 +162,11 @@ async function sendChunkBulk(chunk, metadata) {
 function handleChunk() {
     // CREATING BUFFER
     let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime');
-    let chunk = Buffer.alloc(chunkSize);
-    chunk.fill(fileStream._read(chunkSize));
+    let chunk = fileStream._read(chunkSize);
+
+    // CHECKING FOR EOF (LOAD NEXT SONG)
+    if (chunk.length < chunkSize)
+        chunk = Buffer.concat([ chunk, fileStream._read(chunkSize - chunk.length) ]);
 
     // CREATE METADATA
     let metaString = `StreamURL='https://mofu.piyo.cafe/';StreamTitle='${CurrentSong().title} (${CurrentSong().artist})';`;
