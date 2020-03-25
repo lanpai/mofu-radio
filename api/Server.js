@@ -1,7 +1,7 @@
 // MOFU-RADIO REQUIREMENTS
 const { Config } = require('./Data.js');
 const Log = require('./Log.js');
-const { NextSong, CurrentQueue } = require('./QueueHandler.js');
+const { CurrentSong, NextSong, CurrentQueue } = require('./QueueHandler.js');
 
 // BASIC REQUIREMENTS
 const { Readable } = require('stream');
@@ -86,15 +86,27 @@ var server = http.createServer(
                     'icy-metaint': (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime')
                 });
 
+                // CHECK ICY HEADER
+                let isIcy = (req.headers['icy-metadata'] || '0') === '1';
+
                 // WRITING BACK BUFFER
-                let backBufferConcat = Buffer.concat(backBuffer);
-                res.write(backBufferConcat);
+                let dataSent = 0;
+                backBuffer.forEach(obj => {
+                    let buffer;
+                    if (isIcy)
+                        buffer = Buffer.concat([ obj.chunk, obj.metadata ]);
+                    else
+                        buffer = obj.chunk;
+
+                    res.write(buffer);
+                    dataSent += buffer.length;
+                });
 
                 // ADDING USER TO LISTENERS
                 listeners.push({
-                    isIcy: (req.headers['icy-metadata'] || 0) === 1,
+                    isIcy: isIcy,
                     res: res,
-                    dataSent: backBufferConcat.length
+                    dataSent: dataSent
                 });
                 
                 Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
@@ -134,34 +146,43 @@ var server = http.createServer(
     }
 );
 
-function interlaceIcyChunk(chunk, subchunk, stride, offset) {
-    //return Buffer;
-}
-
-async function sendChunk(listener, chunk) {
-    // interlace if necessary here
-    listener.res.write(chunk);
+async function sendChunk(listener, chunk, metadata) {
+    if (listener.isIcy)
+        listener.res.write(Buffer.concat([ chunk, metadata ]));
+    else
+        listener.res.write(chunk);
     listener.dataSent += chunk.length;
 }
 
-async function sendChunkBulk(chunk) {
-    for (let listener of listeners) {
-        sendChunk(listener, chunk)
-    }
+async function sendChunkBulk(chunk, metadata) {
+    for (let listener of listeners)
+        sendChunk(listener, chunk, metadata)
 }
 
 function handleChunk() {
     // CREATING BUFFER
     let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime');
-    let chunk = fileStream._read(chunkSize);
+    let chunk = Buffer.alloc(chunkSize);
+    chunk.fill(fileStream._read(chunkSize));
+
+    // CREATE METADATA
+    let metaString = `StreamURL='https://mofu.piyo.cafe/';StreamTitle='${CurrentSong().title} (${CurrentSong().artist})';`;
+    let metaSize = Math.ceil(Buffer.byteLength(Buffer.from(metaString, 'utf8')) / 16);
+    let sizeBuffer = Buffer.alloc(1);
+    sizeBuffer[0] = metaSize;
+
+    let metaBuffer = Buffer.alloc(metaSize * 16);
+    metaBuffer.write(metaString);
+
+    let metadata = Buffer.concat([ sizeBuffer, metaBuffer ]);
 
     // ADDING CHUNK TO BACK BUFFER
-    backBuffer.push(chunk);
+    backBuffer.push({ chunk, metadata });
     if (Config('audio.backBufferLength') / Config('audio.chunkTime') < backBuffer.length)
         backBuffer.shift();
 
     // SENDING CURRENT CHUNK
-    sendChunkBulk(chunk);
+    sendChunkBulk(chunk, metadata);
 
     // LISTENER CLEANUP
     let isCleaned = false;
