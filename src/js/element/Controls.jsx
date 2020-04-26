@@ -13,9 +13,6 @@ const mapStateToProps = state => {
         currentID: state.currentSong.id,
         favorites: state.favorites
     }
-
-    this.onKey = this.onKey.bind(this);
-    this.volumeScroll = this.volumeScroll.bind(this);
 };
 
 var controls = null;
@@ -24,6 +21,9 @@ class Controls extends Component {
     constructor() {
         super();
         this.onFavoriteToggle = this.onFavoriteToggle.bind(this);
+
+        this.onKey = this.onKey.bind(this);
+        this.volumeScroll = this.volumeScroll.bind(this);
     }
 
     onPlayToggle() {
@@ -35,7 +35,7 @@ class Controls extends Component {
     }
 
     volumeChange(e) {
-        UpdateVolume(e.target.value);
+        UpdateVolume(parseFloat(e.target.value));
         e.preventDefault();
     }
 
@@ -101,7 +101,7 @@ class Controls extends Component {
                     </svg>
                 </div>
                 <div className='icon' style={{ width: '50%', flex: 4 }}>
-                    <input ref='volume' onInput={ this.volumeChange } onMouseWheel={ this.volumeScroll.bind(this) } onWheel={ this.volumeScroll.bind(this) } value={ this.props.volume } type='range' min='0' max='1' step='0.01' className='volume' id='volume' />
+                    <input ref='volume' onInput={ this.volumeChange } onMouseWheel={ this.volumeScroll } onWheel={ this.volumeScroll } value={ this.props.volume } type='range' min='0' max='1' step='0.01' className='volume' id='volume' />
                 </div>
             </div>
         );
