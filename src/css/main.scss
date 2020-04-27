@@ -98,6 +98,7 @@ div {
 }
 .two-col>* {
     max-width: calc(50% - 10px);
+    justify-content: center;
 }
 
 @media (orientation: portrait) {
