@@ -95,7 +95,7 @@ class Request extends Component {
                                 </h3>
                             </Marquee>
                             <Marquee>
-                                <span>
+                                <span style={{ display: 'block' }}>
                                     { metadata.tags }
                                 </span>
                             </Marquee>

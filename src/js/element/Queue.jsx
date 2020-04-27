@@ -45,7 +45,7 @@ class Queue extends Component {
                         </h3>
                     </Marquee>
                     <Marquee>
-                        <span>
+                        <span style={{ display: 'block' }}>
                             { metadata.tags }
                         </span>
                     </Marquee>
