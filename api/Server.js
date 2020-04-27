@@ -232,13 +232,16 @@ function encode(input, callback) {
     });
 }
 
-function nextSong() {
+function nextSong(iter) {
     Log(`now playing "${currentSong.artist} - ${currentSong.title}"`, 3);
 
     // RETRIEVE QUEUE FROM QUEUEHANDLER
     let queue = CurrentQueue();
 
-    currentSong.start = Date.now() + Config('audio.backBufferLength') * 1000;
+    if (iter === 0)
+        currentSong.start = Date.now();
+    else
+        currentSong.start = Date.now() + Config('audio.backBufferLength') * 1000;
 
     wsBroadcast({
         type: 'UPDATE_SONG',
@@ -270,7 +273,7 @@ function nextSong() {
         // RETRIEVING NEXT SONG
         currentSong = NextSong();
 
-        nextSong();
+        nextSong(++iter);
     });
 }
 
@@ -288,7 +291,7 @@ server.listen(Config('network.port'),
             for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
                 handleChunk();
 
-            nextSong();
+            nextSong(0);
         });
     }
 );
