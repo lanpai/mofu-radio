@@ -233,15 +233,15 @@ function encode(input, callback) {
 }
 
 function nextSong(iter) {
-    Log(`now playing "${currentSong.artist} - ${currentSong.title}"`, 3);
+    Log(`now playing #${iter} "${currentSong.artist} - ${currentSong.title}"`, 3);
 
     // RETRIEVE QUEUE FROM QUEUEHANDLER
     let queue = CurrentQueue();
 
     if (iter === 0)
-        currentSong.start = Date.now();
+        currentSong.start = Date.now() - Config('audio.backBufferLength') * 1000;
     else
-        currentSong.start = Date.now() + Config('audio.backBufferLength') * 1000;
+        currentSong.start = Date.now();
 
     wsBroadcast({
         type: 'UPDATE_SONG',
