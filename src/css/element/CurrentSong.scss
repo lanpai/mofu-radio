@@ -30,27 +30,23 @@
     -webkit-filter: grayscale(80%);
 }
 
-.playhead {
-    -webkit-appearance: none;
-    appearance: none;
+.playhead-container {
     width: 100%;
     height: 1vh;
+    margin: 0 0 1vh;
     border-radius: 1vh;
     background: #d0d0d0;
-    outline: none;
     opacity: 0.6;
     transition: opacity 500ms;
+    overflow: hidden;
 }
 
-.playhead:hover {
-    opacity: 1;
+.playhead-container:hover {
+    opacity: 1
 }
 
-.playhead::-webkit-slider-thumb {
-    display: none;
+#playhead {
+    height: 100%;
+    background: deeppink;
+    transition: width 1s ease;
 }
-
-.playhead::-moz-range-thumb {
-    display: none;
-}
-

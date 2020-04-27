@@ -23,11 +23,10 @@ class CurrentSong extends Component {
     componentDidMount() {
         this.timer = setInterval(() => {
             if (this.props.currentSong && this.props.currentSong.start) {
-                let range = document.getElementById('playhead');
-                playhead.value = (Date.now() - this.props.currentSong.start) / 1000;
-
-                let percentage = 100 * range.value / range.max;
-                range.style.background = `linear-gradient(to right, deeppink 0%, deeppink ${percentage}%, #d0d0d0 ${percentage}%)`;
+                let value = (Date.now() - this.props.currentSong.start) / 1000;
+                let percentage = 100 * value / this.props.currentSong.estDuration;
+                document.getElementById('playhead').style.width = `${percentage}%`;
+                //range.style.background = `linear-gradient(to right, deeppink 0%, deeppink ${percentage}%, #d0d0d0 ${percentage}%)`;
             }
         }, 1000);
     }
@@ -82,7 +81,10 @@ class CurrentSong extends Component {
                     </h3>
                 </Marquee>
 
-                <input type='range' value='0' min='0' max={ this.props.currentSong.estDuration } step='0.1' className='playhead' id='playhead' />
+                <div className='playhead-container'>
+                    <div id='playhead'>
+                    </div>
+                </div>
 
                 <div style={{ float: 'left' }}>
                     <svg style={{ width: '2vh', height: '2vh', marginBottom: '-0.35vh' }} viewBox='0 0 24 24'>
