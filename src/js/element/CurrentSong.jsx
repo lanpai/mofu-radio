@@ -65,17 +65,17 @@ class CurrentSong extends Component {
                 </figure>
                 <hr />
                 <Marquee>
-                    <h1 style={{ height: '5vh' }}>
+                    <h1>
                         { metadata.title }
                     </h1>
                 </Marquee>
                 <Marquee>
-                    <h2 style={{ fontWeight: 'normal', color: 'deeppink', height: '4vh' }}>
+                    <h2 style={{ fontWeight: 'normal', color: 'deeppink' }}>
                         { metadata.artist }
                     </h2>
                 </Marquee>
                 <hr />
-                <Marquee enabled={ true } style={{ height: '3vh', margin: '0 0 2vh 0' }}>
+                <Marquee enabled={ true } style={{ margin: '0 0 1em' }}>
                     <h3 style={{ margin: 0, fontWeight: 'normal', textAlign: 'center' }}>
                         { metadata.tags }
                     </h3>
@@ -87,14 +87,14 @@ class CurrentSong extends Component {
                 </div>
 
                 <div style={{ float: 'left' }}>
-                    <svg style={{ width: '2vh', height: '2vh', marginBottom: '-0.35vh' }} viewBox='0 0 24 24'>
+                    <svg style={{ width: '1em', height: '1em', marginBottom: '-0.2em' }} viewBox='0 0 24 24'>
                         <path d='M12,1C7,1 3,5 3,10V17A3,3 0 0,0 6,20H9V12H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V12H15V20H18A3,3 0 0,0 21,17V10C21,5 16.97,1 12,1Z' />
                     </svg>
                     &nbsp;
-                    <span style={{ fontSize: '2vh', lineHeight: '3vh' }}>{ this.props.stats.listeners }</span>
+                    <span>{ this.props.stats.listeners }</span>
                 </div>
 
-                <span style={{ fontSize: '2vh', lineHeight: '3vh', float: 'right' }} className='button' onClick={ ToggleJP }>{ lang }</span>
+                <span style={{ float: 'right' }} className='button' onClick={ ToggleJP }>{ lang }</span>
             </>
 
         );

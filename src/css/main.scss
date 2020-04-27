@@ -49,25 +49,24 @@ html, body {
     margin: 0;
 
     font-family: 'Noto Sans JP', sans-serif;
-    font-size: 1.5vh;
-    line-height: 2.5vh;
+    font-size: 16px;
 }
 
 h1 {
-    font-size: 4vh;
-    line-height: 5vh;
+    font-size: 2.5em;
+    line-height: 1.25em;
     margin: 0;
     font-weight: 500;
 }
 h2 {
-    font-size: 3vh;
-    line-height: 4vh;
+    font-size: 2em;
+    line-height: 1em;
     margin: 0;
     font-weight: 500;
 }
 h3 {
-    font-size: 2vh;
-    line-height: 3vh;
+    font-size: 1.25em;
+    line-height: 1.25em;
     margin: 0;
     font-weight: 500;
 }
@@ -92,13 +91,13 @@ div {
     flex: 1 0 0;
 }
 .flex-col>*:not(:first-child) {
-    margin: 2vh 0 0 0;
+    margin: 20px 0 0 0;
 }    
 .flex-row>*:not(:first-child) {
-    margin: 0 0 0 2vh;
+    margin: 0 0 0 20px;
 }
 .two-col>* {
-    max-width: calc(50% - 1vh);
+    max-width: calc(50% - 10px);
 }
 
 @media (orientation: portrait) {

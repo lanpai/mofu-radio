@@ -86,17 +86,17 @@ class Controls extends Component {
         return (
             <div className='flex-row'>
                 <div className='icon button' onClick={ this.onPlayToggle }>
-                    <svg style={{ width: '4vh', height: '4vh' }} viewBox='0 0 24 24'>
+                    <svg style={{ width: '2.5em', height: '2.5em' }} viewBox='0 0 24 24'>
                         { toggleButton }
                     </svg>
                 </div>
                 <div className='icon button' style={{ opacity: '0.2' }}>
-                    <svg style={{ width: '4vh', height: '4vh' }} viewBox='0 0 24 24'>
+                    <svg style={{ width: '2.5em', height: '2.5em' }} viewBox='0 0 24 24'>
                         <path fill='#202020' d='M5,5V19H8V5M10,5V19L21,12' />
                     </svg>
                 </div>
                 <div className='icon button' onClick={ this.onFavoriteToggle }>
-                    <svg style={{ width: '4vh', height: '4vh' }} viewBox='0 0 24 24'>
+                    <svg style={{ width: '2.5em', height: '2.5em' }} viewBox='0 0 24 24'>
                         { favoriteButton }
                     </svg>
                 </div>

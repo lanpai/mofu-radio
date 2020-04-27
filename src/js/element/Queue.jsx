@@ -45,9 +45,9 @@ class Queue extends Component {
                         </h3>
                     </Marquee>
                     <Marquee>
-                        <h3 style={{ fontSize: '1.6vh', lineHeight: '2.6vh', fontWeight: 'normal' }}>
+                        <span>
                             { metadata.tags }
-                        </h3>
+                        </span>
                     </Marquee>
                     <hr />
                 </div>
