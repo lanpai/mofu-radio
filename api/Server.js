@@ -201,25 +201,30 @@ function handleChunk() {
 }
 
 function encode(input, callback) {
-    Log(`encoding "${input}"`, 4);
+    Log(`encoding "${input.file}"`, 4);
 
     // COPYING FILE TO TMP
     if (!fs.existsSync(Config('directories.tmp')))
         fs.mkdirSync(Config('directories.tmp'));
-    fs.copyFileSync(`${Config('directories.disc')}/${input}`, `${Config('directories.tmp')}/${input}`);
+    fs.copyFileSync(`${Config('directories.disc')}/${input.file}`, `${Config('directories.tmp')}/${input.file}`);
     
     // STRIPPING ID3 TAGS
-    execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input}"`);
+    execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input.file}"`);
 
     // RUNNING LAME ENCODER
     let encoder = new Lame({
         bitrate: Config('audio.bitrate'),
         resample: Config('audio.sampleFreq'),
         ...LameOptions
-    }).setFile(`${Config('directories.tmp')}/${input}`);
+    }).setFile(`${Config('directories.tmp')}/${input.file}`);
     encoder.encode().then(function onEncoded() {
+        // ESTIMATE DURATION
+        let stats = fs.statSync(`${Config('directories.tmp')}/${input.file}`);
+        let kbSize = stats.size / 125;
+        input.estDuration = kbSize / Config('audio.bitrate');
+
         // DELETE TMP FILE
-        fs.unlinkSync(`${Config('directories.tmp')}/${input}`);
+        fs.unlinkSync(`${Config('directories.tmp')}/${input.file}`);
 
         callback(encoder.getBuffer());
     }).catch(function onEncodeErr(err) {
@@ -235,10 +240,7 @@ function nextSong() {
 
     wsBroadcast({
         type: 'UPDATE_SONG',
-        currentSong: {
-            ...currentSong,
-            start: Date.now() + Config('backBufferLength') * 1000
-        },
+        currentSong: currentSong,
         queue: queue
     });
 
@@ -250,7 +252,7 @@ function nextSong() {
     timer.setInterval(handleChunk, '', `${Config('audio.chunkTime')}s`);
 
     // PRELOADING NEXT SONG IN QUEUE
-    encode(queue[0].file, function onEncoded(buffer) {
+    encode(queue[0], function onEncoded(buffer) {
         nextFileStream = new FileReadable(buffer);
     });
 
@@ -277,7 +279,7 @@ server.listen(Config('network.port'),
         // ADDING FIRST SONG
         currentSong = NextSong();
 
-        encode(currentSong.file, function onEncoded(buffer) {
+        encode(currentSong, function onEncoded(buffer) {
             fileStream = new FileReadable(buffer);
 
             // CREATING BACK BUFFER
