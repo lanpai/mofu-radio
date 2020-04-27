@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&display=swap');
+
 * {
     scroll-behavior: smooth;
     -webkit-touch-callout: none;
@@ -46,7 +48,7 @@ html, body {
 
     margin: 0;
 
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
     font-size: 1.5vh;
     line-height: 2.5vh;
 }
