@@ -20,6 +20,18 @@ class CurrentSong extends Component {
         super();
     }
 
+    componentDidMount() {
+        this.timer = setInterval(() => {
+            if (this.props.currentSong && this.props.currentSong.start) {
+                let range = document.getElementById('playhead');
+                playhead.value = (Date.now() - this.props.currentSong.start) / 1000;
+
+                let percentage = 100 * range.value / range.max;
+                range.style.background = `linear-gradient(to right, deeppink 0%, deeppink ${percentage}%, #d0d0d0 ${percentage}%)`;
+            }
+        }, 1000);
+    }
+
     render() {
         let metadata = {
             artist: this.props.currentSong.artist || '',
@@ -70,6 +82,8 @@ class CurrentSong extends Component {
                     </h3>
                 </Marquee>
 
+                <input type='range' value='0' min='0' max={ this.props.currentSong.estDuration } step='0.1' className='playhead' id='playhead' />
+
                 <div style={{ float: 'left' }}>
                     <svg style={{ width: '2vh', height: '2vh', marginBottom: '-0.35vh' }} viewBox='0 0 24 24'>
                         <path d='M12,1C7,1 3,5 3,10V17A3,3 0 0,0 6,20H9V12H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V12H15V20H18A3,3 0 0,0 21,17V10C21,5 16.97,1 12,1Z' />
@@ -77,6 +91,7 @@ class CurrentSong extends Component {
                     &nbsp;
                     <span style={{ fontSize: '2vh', lineHeight: '3vh' }}>{ this.props.stats.listeners }</span>
                 </div>
+
                 <span style={{ fontSize: '2vh', lineHeight: '3vh', float: 'right' }} className='button' onClick={ ToggleJP }>{ lang }</span>
             </>
 
