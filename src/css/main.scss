@@ -140,3 +140,9 @@ audio {
 ::-webkit-scrollbar-thumb {
     background: #d0d0d0;
 }
+
+hr {
+    border-top: thin solid black;
+    border-width: 1.5px 0 0 0;
+    opacity: 0.3;
+}
