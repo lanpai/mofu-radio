@@ -2,7 +2,7 @@
     display: flex;
     margin: 0 auto;
     width: 100vh;
-    max-width: 1000px;
+    max-width: #{'min(1000px, 100vw)'};
 
     flex-direction: column;
 }
