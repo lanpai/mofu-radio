@@ -15,11 +15,12 @@ class Marquee extends Component {
     checkOverflow() {
         let _this = this;
         window.requestAnimationFrame(function onFrameRendered() {
-            _this.setState({
-                isOverflowing:
-                    ReactDOM.findDOMNode(_this.refs.subdiv).children[0].scrollWidth >
-                    ReactDOM.findDOMNode(_this).offsetWidth
-            });
+            if (ReactDOM.findDOMNode(_this.refs.subdiv))
+                _this.setState({
+                    isOverflowing:
+                        ReactDOM.findDOMNode(_this.refs.subdiv).children[0].scrollWidth >
+                        ReactDOM.findDOMNode(_this).offsetWidth
+                });
         });
     }
 
