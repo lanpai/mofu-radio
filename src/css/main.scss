@@ -101,7 +101,7 @@ div {
     justify-content: center;
 }
 
-@media (orientation: portrait) {
+@media (max-width: 768px) {
     .flex-row.collapsible {
         flex-direction: column;
     }
