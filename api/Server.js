@@ -238,10 +238,7 @@ function nextSong(iter) {
     // RETRIEVE QUEUE FROM QUEUEHANDLER
     let queue = CurrentQueue();
 
-    if (iter === 0)
-        currentSong.start = Date.now() - Config('audio.backBufferLength') * 1000;
-    else
-        currentSong.start = Date.now();
+    currentSong.start = Date.now() - Config('audio.backBufferLength') * 1000;
 
     wsBroadcast({
         type: 'UPDATE_SONG',

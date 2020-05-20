@@ -22,9 +22,9 @@ class CurrentSong extends Component {
 
     componentDidMount() {
         this.timer = setInterval(() => {
-            if (this.props.currentSong && this.props.currentSong.start) {
+            if (this.props.currentSong) {
                 let value = (Date.now() - this.props.currentSong.start) / 1000;
-                let percentage = 100 * value / this.props.currentSong.estDuration;
+                let percentage = Math.max(100 * value / this.props.currentSong.estDuration, 0);
                 document.getElementById('playhead').style.width = `${percentage}%`;
                 //range.style.background = `linear-gradient(to right, deeppink 0%, deeppink ${percentage}%, #d0d0d0 ${percentage}%)`;
             }
