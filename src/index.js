@@ -7,12 +7,14 @@ import css from './css/main.scss';
 import { Provider } from 'react-redux';
 import store from './store';
 
-const wrapper = document.getElementById('main-interface');
-wrapper ? ReactDOM.render(
-    <Provider store={ store }>
-        <MainInterface />
-    </Provider>,
-    wrapper
-) : false;
+if (!(/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent))) {
+    const wrapper = document.getElementById('main-interface');
+    wrapper ? ReactDOM.render(
+        <Provider store={ store }>
+            <MainInterface />
+        </Provider>,
+        wrapper
+    ) : false;
+}
 
 import './websocket.js';

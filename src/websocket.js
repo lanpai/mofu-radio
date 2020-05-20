@@ -62,6 +62,8 @@ function ConnectSocket() {
         FetchList('*');
     }
 }
-ConnectSocket();
+
+if (!(/bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent)))
+    ConnectSocket();
 
 export { FetchList, RequestSong };
