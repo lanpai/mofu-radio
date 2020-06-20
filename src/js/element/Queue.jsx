@@ -40,7 +40,7 @@ class Queue extends Component {
                         <h3>{ metadata.title }</h3>
                     </Marquee>
                     <Marquee>
-                        <h3 style={{ fontWeight: 'normal', color: 'deeppink' }}>
+                        <h3 style={{ fontWeight: 'normal', color: 'RGB(var(--highlight))' }}>
                             { metadata.artist }
                         </h3>
                     </Marquee>
