@@ -1,7 +1,7 @@
 .volume {
     -webkit-appearance: none;
     width: 100%;
-    height: 10px;
+    height: 9px;
     border-radius: 1vh;
     background: #d0d0d0;
     outline: none;
@@ -16,16 +16,16 @@
 .volume::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 15px;
+    width: 22px;
+    height: 13px;
     border-radius: 5px;
     background: deeppink;
     cursor: pointer;
 }
 
 .volume::-moz-range-thumb {
-    width: 25px;
-    height: 15px;
+    width: 22px;
+    height: 13px;
     border-radius: 5px;
     background: deeppink;
     cursor: pointer;
