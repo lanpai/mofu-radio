@@ -11,6 +11,7 @@ import Controls from '../element/Controls.jsx';
 import Tabs from './Tabs.jsx';
 import Queue from '../element/Queue.jsx';
 import List from '../element/List.jsx';
+import Themer from '../element/Themer.jsx';
 
 const mapStateToProps = state => {
     return {
@@ -46,6 +47,10 @@ class MainInterface extends Component {
                     <h3>Song Request Form</h3>
                     <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https://forms.gle/mp3qZX9hEwnhm53V6</a>
                     <br />
+                    <br />
+                    <Themer />
+                    <br />
+                    <i>contact: <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a></i>
                     <br />
                     <i>made with ♥ by lanpai</i>
                 </div>

@@ -1,6 +1,8 @@
 import { createStore } from 'redux';
 import update from 'immutability-helper';
 
+import { DEFAULT_THEME } from './themes';
+
 const initialState = {
     playing: false,
     jp: localStorage.getItem('jp') === 'true',
@@ -14,8 +16,15 @@ const initialState = {
     top: [],
     new: [],
     volume: parseFloat(localStorage.getItem('volume')) || 0.5,
-    favorites: JSON.parse(localStorage.getItem('favorites')) || []
+    favorites: JSON.parse(localStorage.getItem('favorites')) || [],
+    theme: JSON.parse(localStorage.getItem('theme')) || DEFAULT_THEME
 };
+
+document.documentElement.style.setProperty('--background', initialState.theme.background);
+document.documentElement.style.setProperty('--highlight', initialState.theme.highlight);
+document.documentElement.style.setProperty('--foreground', initialState.theme.foreground);
+document.documentElement.style.setProperty('--midground', initialState.theme.midground);
+document.documentElement.style.setProperty('--default-bg', initialState.theme.defaultBg);
 
 function reducer(state = initialState, action) {
     switch (action.type) {
@@ -94,6 +103,18 @@ function reducer(state = initialState, action) {
             return update(state, {
                 queue: {
                     $push: [ action.payload.song ]
+                }
+            });
+        case 'UPDATE_THEME':
+            localStorage.setItem('theme', JSON.stringify(action.payload.theme));
+            document.documentElement.style.setProperty('--background', action.payload.theme.background);
+            document.documentElement.style.setProperty('--highlight', action.payload.theme.highlight);
+            document.documentElement.style.setProperty('--foreground', action.payload.theme.foreground);
+            document.documentElement.style.setProperty('--midground', action.payload.theme.midground);
+            document.documentElement.style.setProperty('--default-bg', action.payload.theme.defaultBg);
+            return update(state, {
+                theme: {
+                    $set: action.payload.theme
                 }
             });
         default:

@@ -1,4 +1,4 @@
-import store from './store';
+import store from './store.js';
 
 var ctx = new AudioContext();
 var audio = document.getElementById('audio');

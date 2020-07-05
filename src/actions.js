@@ -1,4 +1,4 @@
-import store from './store';
+import store from './store.js';
 
 let imgCache = [];
 
@@ -94,8 +94,18 @@ function PushQueue(song) {
     });
 }
 
+function UpdateTheme(theme) {
+    store.dispatch({
+        type: 'UPDATE_THEME',
+        payload: {
+            theme: theme
+        }
+    });
+}
+
 export {
     UpdateSong, UpdateTop, UpdateNew, UpdateList, UpdateListeners, UpdateVolume,
     TogglePlay, ToggleJP, ToggleFavorite,
-    PushQueue
+    PushQueue,
+    UpdateTheme
 };
