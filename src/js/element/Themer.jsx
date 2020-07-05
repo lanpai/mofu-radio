@@ -17,8 +17,8 @@ class Themer extends Component {
 
     render() {
         return (
-            <>
-                <h3>Theme</h3>
+            <details>
+                <summary className='button'><h3>Theme</h3></summary>
                 <hr />
                 <h4>Presets</h4>
                 <ul>
@@ -28,7 +28,7 @@ class Themer extends Component {
                     <li><span className='button' onClick={ () => UpdateTheme(MOCHA) }>mocha</span></li>
                     <li><span className='button' onClick={ () => UpdateTheme(DUSK) }>dusk</span></li>
                 </ul>
-            </>
+            </details>
         )
     }
 }

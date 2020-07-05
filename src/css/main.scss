@@ -154,7 +154,7 @@ a {
     -ms-user-select: none;
     user-select: none;
 }
-.button:hover, .button.active {
+.button:hover, .button.active, details[open]>summary.button {
     opacity: 1;
 }
 
@@ -173,4 +173,11 @@ hr {
     border-top-style: solid;
     border-width: 1px 0 0 0;
     opacity: 0.3;
+}
+
+summary {
+    cursor: pointer;
+}
+summary>* {
+    display: inline;
 }
