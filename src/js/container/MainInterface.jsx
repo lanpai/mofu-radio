@@ -44,11 +44,24 @@ class MainInterface extends Component {
                     <path fill='RGB(var(--foreground))' d='M13,12H20V13.5H13M13,9.5H20V11H13M13,14.5H20V16H13M21,4H3A2,2 0 0,0 1,6V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V6A2,2 0 0,0 21,4M21,19H12V6H21' />
                 </svg>,
                 <div>
-                    <h3>Song Request Form</h3>
-                    <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https://forms.gle/mp3qZX9hEwnhm53V6</a>
-                    <br />
-                    <br />
                     <Themer />
+                    <hr />
+                    <br />
+                    <h3>Advanced Filter</h3>
+                    <hr />
+                    <p>The search system includes advanced filtering using the id, artist, title, tags keys.</p>
+                    <h4>Examples</h4>
+                    <ul>
+                        <li>artist:&quot;Itou Kanako&quot; tags:STEINS;GATE</li>
+                        <li>tags:K-On dont say</li>
+                        <li>id:45,87,65</li>
+                    </ul>
+                    <hr />
+                    <br />
+                    <h3>Song Request Form</h3>
+                    <hr />
+                    <p>Google Form: <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
+                    <hr />
                     <br />
                     <i>contact: <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a></i>
                     <br />

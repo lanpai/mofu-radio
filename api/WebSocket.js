@@ -45,83 +45,93 @@ wss.on('connection', function onWSConnection(ws, req) {
                 case 'FETCH_LIST':
                     // FUZZY SEARCHING THROUGH DATABASE
                     let filter = message.filter || '*';
-                    let filterArr = [];
+
                     let filtered = db.read().get('songs');
                     let result = [];
-                    
-                    // FILTER PROCESSING
-                    let regexp = /[^\s"]+|"([^"]*)"/gi;
-                    let match;
-                    do {
-                        match = regexp.exec(filter);
-                        if (match != null)
-                            filterArr.push(match[1] ? match[1] : match[0]);
-                    }
-                    while (match != null);
 
-                    let i = 0;
-                    for (; i < filterArr.length; i++) {
-                        let keyval = filterArr[i].split(':');
-                        if (keyval.length > 1) {
-                            let [ key, val ] = keyval;
-                            switch (key) {
-                                case 'id':
-                                    val = val.split(',');
-                                    filtered = filtered.filter(song => {
-                                        for (let id of val)
-                                            if (id == `${song.id}`)
-                                                return true;
-                                        return false;
-                                    });
-                                    break;
-                                case 'artist':
-                                    val = val.toLowerCase();
-                                    filtered = filtered.filter(song => {
-                                        return (song.artist ?
-                                                song.artist.toLowerCase().indexOf(val) != -1 :
-                                                false) ||
-                                            (song.en.artist ?
-                                                song.en.artist.toLowerCase().indexOf(val) != -1 :
-                                                false
-                                            );
-                                    });
-                                    break;
-                                case 'title':
-                                    val = val.toLowerCase();
-                                    filtered = filtered.filter(song => {
-                                        return (song.title ?
-                                                song.title.toLowerCase().indexOf(val) != -1 :
-                                                false) ||
-                                            (song.en.title ?
-                                                song.en.title.toLowerCase().indexOf(val) != -1 :
-                                                false
-                                            );
-                                    });
-                                    break;
-                                case 'tags':
-                                    val = val.toLowerCase();
-                                    filtered = filtered.filter(song => {
-                                        return (song.tags ?
-                                                song.tags.toLowerCase().indexOf(val) != -1 :
-                                                false) ||
-                                            (song.en.tags ?
-                                                song.en.tags.toLowerCase().indexOf(val) != -1 :
-                                                false
-                                            );
-                                    });
-                                    break;
-                            }
-                        }
-                        else {
-                            break;
+                    let filterArr = [];
+                    let string = '';
+
+                    function pushBack() {
+                        if (string !== '')
+                            filterArr.push(string);
+                        string = '';
+                    }
+
+                    let inQuotes = false;
+                    for (let character of filter) {
+                        switch (character) {
+                            case '"':
+                                inQuotes = !inQuotes;
+                                break;
+                            case ':':
+                                string += ':';
+                                if (!inQuotes)
+                                    pushBack();
+                                break;
+                            case ' ':
+                                if (!inQuotes)
+                                    pushBack();
+                                else
+                                    string += ' ';
+                                break;
+                            default:
+                                string += character;
                         }
                     }
-                    filterArr.splice(0, i);
+                    pushBack();
 
-                    filter = filterArr.join(' ');
-                    if (filter == '') filter = '*';
+                    filter = '';
+                    for (let i = 0; i < filterArr.length; i++) {
+                        let val = '';
+                        switch (filterArr[i]) {
+                            case 'id:':
+                                val = filterArr[++i] || '';
+                                val = val.split(',');
+                                filtered = filtered.filter(song => {
+                                    for (let id of val)
+                                        if (id === `${song.id}`)
+                                            return true;
+                                    return false;
+                                });
+                                break;
+                            case 'artist:':
+                                val = filterArr[++i] || '';
+                                val = val.toLowerCase();
+                                filtered = filtered.filter(song => {
+                                    return (
+                                        (song.artist ? song.artist.toLowerCase().indexOf(val) != -1 : false) ||
+                                        (song.en.artist ? song.en.artist.toLowerCase().indexOf(val) != -1 : false)
+                                    );
+                                });
+                                break;
+                            case 'title:':
+                                val = filterArr[++i] || '';
+                                val = val.toLowerCase();
+                                filtered = filtered.filter(song => {
+                                    return (
+                                        (song.title ? song.title.toLowerCase().indexOf(val) != -1 : false) ||
+                                        (song.en.title ? song.en.title.toLowerCase().indexOf(val) != -1 : false)
+                                    );
+                                });
+                                break;
+                            case 'tags:':
+                                val = filterArr[++i] || '';
+                                val = val.toLowerCase();
+                                filtered = filtered.filter(song => {
+                                    return (
+                                        (song.tags ? song.tags.toLowerCase().indexOf(val) != -1 : false) ||
+                                        (song.en.tags ? song.en.tags.toLowerCase().indexOf(val) != -1 : false)
+                                    );
+                                });
+                                break;
+                            default:
+                                filter += filterArr[i] + ' ';
+                        }
+                    }
+                    filter = filter.trim();
                     
-                    if (filter === '*')
+                    if (filter === '*' || filter == '')
                         result = filtered.value();
                     else {
                         let fuse = new Fuse(filtered.value(), fuseOptions);
