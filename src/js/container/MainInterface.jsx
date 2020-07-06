@@ -60,6 +60,18 @@ class MainInterface extends Component {
                     </details>
                     <hr />
                     <br />
+                    <details>
+                        <summary className='button'><h3>Stream Info</h3></summary>
+                        <hr />
+                        <h4>Links</h4>
+                        <ul>
+                            <li><a href='stream.mp3' target='_blank'>Direct Link</a></li>
+                            <li><a href='stream.m3u' target='_blank'>.m3u Playlist</a></li>
+                            <li><a href='stream.pls' target='_blank'>.pls Playlist</a></li>
+                        </ul>
+                    </details>
+                    <hr />
+                    <br />
                     <details open>
                         <summary className='button'><h3>Song Request Form</h3></summary>
                         <hr />

@@ -53,6 +53,8 @@ const map = {
 	'.wav': 'audio/wav',
 	'.mp3': 'audio/mpeg',
 	'.svg': 'image/svg+xml',
+    '.m3u': 'application/octet-stream',
+    '.pls': 'application/octet-stream'
 };
 
 var listeners = [];
