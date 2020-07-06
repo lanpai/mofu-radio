@@ -46,7 +46,6 @@ class MainInterface extends Component {
                 <div>
                     <Themer />
                     <hr />
-                    <br />
                     <details>
                         <summary className='button'><h3>Advanced Filter</h3></summary>
                         <hr />
@@ -59,8 +58,7 @@ class MainInterface extends Component {
                         </ul>
                     </details>
                     <hr />
-                    <br />
-                    <details>
+                    <details open>
                         <summary className='button'><h3>Stream Info</h3></summary>
                         <hr />
                         <h4>Links</h4>
@@ -71,7 +69,6 @@ class MainInterface extends Component {
                         </ul>
                     </details>
                     <hr />
-                    <br />
                     <details open>
                         <summary className='button'><h3>Song Request Form</h3></summary>
                         <hr />
