@@ -171,7 +171,10 @@ function handleChunk() {
         chunk = Buffer.concat([ chunk, fileStream._read(chunkSize - chunk.length) ]);
 
     // CREATE METADATA
-    let metaString = `StreamURL='https://mofu.piyo.cafe/';StreamTitle='${CurrentSong().title} (${CurrentSong().artist})';`;
+    let metaString = `StreamURL='https://mofu.piyo.cafe/';StreamTitle='${CurrentSong().artist} - ${CurrentSong().title}`;
+    if (CurrentSong().tags)
+        metaString += ` (${CurrentSong().tags})`;
+    metaString += '\';';
     let metaSize = Math.ceil(Buffer.byteLength(Buffer.from(metaString, 'utf8')) / 16);
     let sizeBuffer = Buffer.alloc(1);
     sizeBuffer[0] = metaSize;
