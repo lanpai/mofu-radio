@@ -50,7 +50,7 @@ class CurrentSong extends Component {
         if (this.props.currentSong.options)
             albumArt = `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front`;
 
-        document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
+        //document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
 
         let lang = 'en';
         if (this.props.jp)

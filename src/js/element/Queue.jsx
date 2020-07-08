@@ -18,45 +18,38 @@ class Queue extends Component {
     }
 
     render() {
-        let queue = [];
-        for (let song of this.props.queue) {
-            let metadata = {
-                artist: song.artist || '',
-                title: song.title || '',
-                tags: song.tags || ''
-            };
-
-            if (!this.props.jp) {
-                metadata = {
-                    artist: song.en.artist || metadata.artist,
-                    title: song.en.title || metadata.title,
-                    tags: song.en.tags || metadata.tags
-                };
-            }
-
-            queue.push(
-                <div key={ song.id }>
-                    <Marquee>
-                        <h3>{ metadata.title }</h3>
-                    </Marquee>
-                    <Marquee>
-                        <h3 style={{ fontWeight: 'normal', color: 'RGB(var(--highlight))' }}>
-                            { metadata.artist }
-                        </h3>
-                    </Marquee>
-                    <Marquee>
-                        <span style={{ display: 'block' }}>
-                            { metadata.tags }
-                        </span>
-                    </Marquee>
-                    <hr />
-                </div>
-            );
-        }
-
         return (
             <>
-                { queue }
+                { this.props.queue.map((song) => {
+                    let artist = song.artist || '';
+                    let title = song.title || '';
+                    let tags = song.tags || '';
+
+                    if (!this.props.jp) {
+                        artist = song.en.artist || artist;
+                        title = song.en.title || title;
+                        tags = song.en.tags || tags;
+                    }
+
+                    return (
+                        <div key={ song.id }>
+                            <Marquee>
+                                <h3>{ title }</h3>
+                            </Marquee>
+                            <Marquee>
+                                <h3 style={{ fontWeight: 'normal', color: 'RGB(var(--highlight))' }}>
+                                    { artist }
+                                </h3>
+                            </Marquee>
+                            <Marquee>
+                                <span style={{ display: 'block' }}>
+                                    { tags }
+                                </span>
+                            </Marquee>
+                            <hr />
+                        </div>
+                    );
+                })}
             </>
         );
     }
