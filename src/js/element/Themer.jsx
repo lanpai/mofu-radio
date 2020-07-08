@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
 import { UpdateTheme } from '../../actions.js';
@@ -10,7 +10,7 @@ const mapStateToProps = state => {
     }
 };
 
-class Themer extends Component {
+class Themer extends PureComponent {
     constructor() {
         super();
     }

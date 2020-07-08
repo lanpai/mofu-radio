@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import css from '../../css/container/Box.scss';
 
-class Box extends Component {
+class Box extends PureComponent {
     constructor() {
         super();
     }

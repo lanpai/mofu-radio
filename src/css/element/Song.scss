@@ -1,0 +1,21 @@
+.songFlex {
+    display: flex;
+    flex-direction: row;
+}
+
+.songArtist {}
+
+.songTitle {
+    font-weight: normal;
+    color: RGB(var(--highlight));
+}
+
+.songTags {}
+
+.songMetadata {
+    flex: 1;
+}
+
+.songIcon {
+    flex: 0;
+}

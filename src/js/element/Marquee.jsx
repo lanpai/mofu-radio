@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import css from '../../css/container/Marquee.scss';
 
-class Marquee extends Component {
+class Marquee extends PureComponent {
     constructor() {
         super();
 
@@ -36,12 +36,11 @@ class Marquee extends Component {
     }
 
     render() {
-        let enabled = false;
-        if (this.props.enabled || this.state.isOverflowing)
-            enabled = true;
-
         return (
-            <div className={ enabled ? 'marquee active' : 'marquee' } style={ this.props.style }>
+            <div
+                className={ this.props.enabled || this.state.isOverflowing ? 'marquee active' : 'marquee' }
+                style={ this.props.style }
+            >
                 <div ref='subdiv'>
                     { this.props.children }
                 </div>

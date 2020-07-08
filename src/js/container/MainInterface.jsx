@@ -1,17 +1,16 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
 import css from '../../css/container/MainInterface.scss';
 
 import Box from './Box.jsx';
-import Marquee from './Marquee.jsx';
-
+import Tabs from './Tabs.jsx';
+import Queue from './Queue.jsx';
+import List from './List.jsx';
+import Info from './Info.jsx';
+import Marquee from '../element/Marquee.jsx';
 import CurrentSong from '../element/CurrentSong.jsx';
 import Controls from '../element/Controls.jsx';
-import Tabs from './Tabs.jsx';
-import Queue from '../element/Queue.jsx';
-import List from '../element/List.jsx';
-import Themer from '../element/Themer.jsx';
 
 const mapStateToProps = state => {
     return {
@@ -20,7 +19,7 @@ const mapStateToProps = state => {
     }
 };
 
-class MainInterface extends Component {
+class MainInterface extends PureComponent {
     constructor() {
         super();
     }
@@ -43,46 +42,7 @@ class MainInterface extends Component {
                 <svg style={{ width: '1.5em', height: '1.5em' }} viewBox='0 0 24 24'>
                     <path fill='RGB(var(--foreground))' d='M13,12H20V13.5H13M13,9.5H20V11H13M13,14.5H20V16H13M21,4H3A2,2 0 0,0 1,6V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V6A2,2 0 0,0 21,4M21,19H12V6H21' />
                 </svg>,
-                <div>
-                    <Themer />
-                    <hr />
-                    <details>
-                        <summary className='button'><h3>Advanced Filter</h3></summary>
-                        <hr />
-                        <p>The search system includes advanced filtering using the id, artist, title, tags keys.</p>
-                        <h4>Examples</h4>
-                        <ul>
-                            <li>artist:&quot;Itou Kanako&quot; tags:STEINS;GATE</li>
-                            <li>tags:K-On dont say</li>
-                            <li>id:45,87,65</li>
-                        </ul>
-                    </details>
-                    <hr />
-                    <details open>
-                        <summary className='button'><h3>Stream Info</h3></summary>
-                        <hr />
-                        <h4>Links</h4>
-                        <ul>
-                            <li><a href='stream.mp3' target='_blank'>Direct Link</a></li>
-                            <li><a href='stream.m3u' target='_blank'>.m3u Playlist</a></li>
-                            <li><a href='stream.pls' target='_blank'>.pls Playlist</a></li>
-                        </ul>
-                    </details>
-                    <hr />
-                    <details open>
-                        <summary className='button'><h3>Song Request Form</h3></summary>
-                        <hr />
-                        <p>Google Forms: <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
-                    </details>
-                    <hr />
-                    <br />
-                    <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a>
-                    <br />
-                    <a href='/privacy-policy.html'>Privacy Policy</a>
-                    <br />
-                    <br />
-                    <i>made with ♥ by lanpai</i>
-                </div>
+                <Info />
             ]
         ];
         return (

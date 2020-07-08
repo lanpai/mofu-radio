@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import css from '../../css/container/Tabs.scss';
 
-class Tabs extends Component {
+class Tabs extends PureComponent {
     constructor() {
         super();
 

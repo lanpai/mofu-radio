@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
 import css from '../../css/element/CurrentSong.scss';
 
 import { ToggleJP } from '../../actions.js';
-import Marquee from '../container/Marquee.jsx';
+
+import Marquee from './Marquee.jsx';
 
 const mapStateToProps = state => {
     return {
@@ -15,7 +16,7 @@ const mapStateToProps = state => {
     }
 };
 
-class CurrentSong extends Component {
+class CurrentSong extends PureComponent {
     constructor() {
         super();
     }
@@ -26,58 +27,49 @@ class CurrentSong extends Component {
                 let value = (Date.now() - this.props.currentSong.start) / 1000;
                 let percentage = Math.max(100 * value / this.props.currentSong.estDuration, 0);
                 document.getElementById('playhead').style.width = `${percentage}%`;
-                //range.style.background = `linear-gradient(to right, deeppink 0%, deeppink ${percentage}%, #d0d0d0 ${percentage}%)`;
             }
         }, 1000);
     }
 
     render() {
-        let metadata = {
-            artist: this.props.currentSong.artist || '',
-            title: this.props.currentSong.title || '',
-            tags: this.props.currentSong.tags || '',
-        };
+        let artist = this.props.currentSong.artist || '';
+        let title = this.props.currentSong.title || '';
+        let tags = this.props.currentSong.tags || '';
 
-        if (!this.props.jp && this.props.currentSong.en) {
-            metadata = {
-                artist: this.props.currentSong.en.artist || metadata.artist,
-                title: this.props.currentSong.en.title || metadata.title,
-                tags: this.props.currentSong.en.tags || metadata.tags,
-            };
+        if (!this.props.jp) {
+            artist = this.props.currentSong.en.artist || artist;
+            title = this.props.currentSong.en.title || title;
+            tags = this.props.currentSong.en.tags || tags;
         }
 
-        let albumArt = '';
-        if (this.props.currentSong.options)
-            albumArt = `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front`;
-
-        //document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
-
-        let lang = 'en';
-        if (this.props.jp)
-            lang = 'jp';
-
-        document.title = `${metadata.title} by ${metadata.artist} (mofu-radio)`;
+        document.title = `${title} by ${artist} (mofu-radio)`;
 
         return (
             <>
                 <figure className={ this.props.playing ? 'albumArt' : 'albumArt grayscale' }>
-                    <img src={ albumArt } onError={ (e) => { e.currentTarget.src = '/default.png' }} />
+                    <img
+                        src={ this.props.currentSong.options ?
+                            `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front` :
+                            '/default.png'
+                        }
+                        onError={ (e) => { e.currentTarget.src = '/default.png' }}
+                    />
                 </figure>
                 <hr />
                 <Marquee>
                     <h1>
-                        { metadata.title }
+                        { title }
                     </h1>
                 </Marquee>
                 <Marquee>
                     <h2 style={{ fontWeight: 'normal', color: 'RGB(var(--highlight))' }}>
-                        { metadata.artist }
+                        { artist }
                     </h2>
                 </Marquee>
                 <hr />
                 <Marquee enabled={ true } style={{ margin: '0 0 1em' }}>
                     <h3 style={{ margin: 0, fontWeight: 'normal', textAlign: 'center' }}>
-                        { metadata.tags }
+                        { tags }
                     </h3>
                 </Marquee>
 
@@ -94,7 +86,9 @@ class CurrentSong extends Component {
                     <span>{ this.props.stats.listeners }</span>
                 </div>
 
-                <span style={{ float: 'right' }} className='button' onClick={ ToggleJP }>{ lang }</span>
+                <span style={{ float: 'right' }} className='button' onClick={ ToggleJP }>
+                    { this.props.jp ? 'jp' : 'en' }
+                </span>
             </>
 
         );
