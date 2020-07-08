@@ -82,6 +82,7 @@ wss.on('connection', function onWSConnection(ws, req) {
                     pushBack();
 
                     let take = 20;
+                    let stride = 0;
 
                     filter = '';
                     for (let i = 0; i < filterArr.length; i++) {
@@ -152,7 +153,13 @@ wss.on('connection', function onWSConnection(ws, req) {
                                 val = filterArr[++i] || '';
                                 val = parseInt(val);
                                 if (val)
-                                    take = val;
+                                    take = Math.max(val, 1);
+                                break;
+                            case 'stride:':
+                                val = filterArr[++i] || '';
+                                val = parseInt(val);
+                                if (val)
+                                    stride = Math.max(val, 0);
                                 break;
                             default:
                                 filter += filterArr[i] + ' ';
@@ -167,7 +174,7 @@ wss.on('connection', function onWSConnection(ws, req) {
                         result = fuse.search(filter);
                     }
 
-                    result = result.slice(0, take);
+                    result = result.slice(stride, stride + take);
 
                     ws.send(JSON.stringify({
                         type: 'UPDATE_LIST',
