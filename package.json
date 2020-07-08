@@ -1,5 +1,5 @@
 {
-  "name": "mofu_radio_android",
+  "name": "mofu-radio-native",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -9,9 +9,37 @@
     "test": "jest",
     "lint": "eslint ."
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lanpai/mofu-radio.git"
+  },
+  "author": "lanpai",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/lanpai/mofu-radio/issues"
+  },
   "dependencies": {
-    "react": "16.11.0",
-    "react-native": "0.62.2"
+    "@react-native-community/async-storage": "^1.11.0",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-navigation/material-top-tabs": "^5.2.12",
+    "@react-navigation/native": "^5.6.1",
+    "immutability-helper": "^3.1.1",
+    "lodash": "^4.17.15",
+    "react": "^16.11.0",
+    "react-native": "0.62.2",
+    "react-native-gesture-handler": "^1.6.1",
+    "react-native-reanimated": "^1.9.0",
+    "react-native-safe-area-context": "^3.0.7",
+    "react-native-screens": "^2.9.0",
+    "react-native-splash-screen": "^3.2.0",
+    "react-native-svg": "^12.1.0",
+    "react-native-tab-view": "^2.14.4",
+    "react-native-track-player": "^1.2.3",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
+    "redux-persist-filesystem-storage": "^2.1.0",
+    "rn-fetch-blob": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

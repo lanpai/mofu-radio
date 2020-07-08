@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.mofu_radio_android",
+    package = "com.mofu_radio_native",
 )
 
 android_resource(
     name = "res",
-    package = "com.mofu_radio_android",
+    package = "com.mofu_radio_native",
     res = "src/main/res",
 )
 
