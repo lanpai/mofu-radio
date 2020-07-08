@@ -72,11 +72,14 @@ class MainInterface extends Component {
                     <details open>
                         <summary className='button'><h3>Song Request Form</h3></summary>
                         <hr />
-                        <p>Google Form: <a href='https://forms.gle/mp3qZX9hEwnhm53V6'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
+                        <p>Google Forms: <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
                     </details>
                     <hr />
                     <br />
-                    <i>contact: <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a></i>
+                    <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a>
+                    <br />
+                    <a href='/privacy-policy.html'>Privacy Policy</a>
+                    <br />
                     <br />
                     <i>made with ♥ by lanpai</i>
                 </div>
