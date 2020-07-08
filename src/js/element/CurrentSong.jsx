@@ -52,12 +52,12 @@ class CurrentSong extends PureComponent {
 
         return (
             <>
-                <figure className={ this.props.playing ? 'albumArt' : 'albumArt grayscale' }>
+                <div className={ this.props.playing ? 'albumArt' : 'albumArt grayscale' }>
                     <img
                         src={ albumArt }
                         onError={ (e) => { e.currentTarget.src = '/default.png' }}
                     />
-                </figure>
+                </div>
                 <hr />
                 <Marquee>
                     <h1>
