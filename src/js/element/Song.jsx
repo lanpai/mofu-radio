@@ -24,7 +24,13 @@ class Song extends PureComponent {
         return (
             <div key={ this.props.key }>
                 <div className='songFlex'>
-                    <div className='songMetadata'>
+                    <div className='songMetadata'
+                        style={
+                            this.props.controls ?
+                            { maxWidth: 'calc(100% - 3.25em)', paddingRight: '0.25em' } :
+                            { maxWidth: '100%' }
+                        }
+                    >
                         <Marquee>
                             <h3 className='songArtist'>
                                 { this.props.jp ? this.props.meta.title : this.props.meta.en.title || this.props.meta.title }

@@ -36,7 +36,7 @@ class CurrentSong extends PureComponent {
         let title = this.props.currentSong.title || '';
         let tags = this.props.currentSong.tags || '';
 
-        if (!this.props.jp) {
+        if (!this.props.jp && this.props.currentSong.en) {
             artist = this.props.currentSong.en.artist || artist;
             title = this.props.currentSong.en.title || title;
             tags = this.props.currentSong.en.tags || tags;
