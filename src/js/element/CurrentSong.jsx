@@ -42,6 +42,7 @@ class CurrentSong extends PureComponent {
             tags = this.props.currentSong.en.tags || tags;
         }
 
+        document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
         document.title = `${title} by ${artist} (mofu-radio)`;
 
         return (
