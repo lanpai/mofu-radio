@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import css from '../../css/element/Song.scss';
@@ -15,9 +15,17 @@ const mapStateToProps = state => {
     }
 }
 
-class Song extends PureComponent {
+class Song extends Component {
     constructor () {
         super();
+    }
+
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.jp !== this.props.jp ||
+            nextProps.favorites.includes(nextProps.meta.id) !== this.props.favorites.includes(this.props.meta.id) ||
+            nextProps.meta.id !== this.props.meta.id)
+            return true;
+        return false;
     }
 
     render() {
