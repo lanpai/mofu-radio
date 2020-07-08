@@ -41,10 +41,9 @@ class Info extends PureComponent {
                     <p>Google Forms: <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
                 </details>
                 <hr />
+                <a href='mailto:radio@piyo.cafe' target='_blank'>radio@piyo.cafe</a>
                 <br />
-                <a href='mailto:radio@piyo.cafe'>radio@piyo.cafe</a>
-                <br />
-                <a href='/privacy-policy.html'>Privacy Policy</a>
+                <a href='/privacy-policy.html' target='_blank'>Privacy Policy</a>
                 <br />
                 <br />
                 <i>made with ♥ by lanpai</i>
