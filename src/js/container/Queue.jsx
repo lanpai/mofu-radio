@@ -1,14 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 
-import css from '../../css/element/Queue.scss';
+import css from '../../css/container/Queue.scss';
 
 import Marquee from '../element/Marquee.jsx';
 import Song from '../element/Song.jsx';
 
 const mapStateToProps = state => {
     return {
-        jp: state.jp,
         queue: state.queue
     }
 };

@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import css from '../../css/container/Marquee.scss';
+import css from '../../css/element/Marquee.scss';
 
-class Marquee extends PureComponent {
+class Marquee extends Component {
     constructor() {
         super();
 
@@ -33,6 +33,13 @@ class Marquee extends PureComponent {
             this.state.children = this.props.children;
             this.checkOverflow();
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextState.isOverflowing !== this.state.isOverflowing ||
+            nextProps.children !== this.props.children)
+            return true;
+        return false;
     }
 
     render() {

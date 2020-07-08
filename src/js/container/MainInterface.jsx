@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
 
 import css from '../../css/container/MainInterface.scss';
 
@@ -11,13 +10,6 @@ import Info from './Info.jsx';
 import Marquee from '../element/Marquee.jsx';
 import CurrentSong from '../element/CurrentSong.jsx';
 import Controls from '../element/Controls.jsx';
-
-const mapStateToProps = state => {
-    return {
-        currentSong: state.currentSong,
-        stats: state.stats
-    }
-};
 
 class MainInterface extends PureComponent {
     constructor() {
@@ -67,4 +59,4 @@ class MainInterface extends PureComponent {
     }
 }
 
-export default connect(mapStateToProps)(MainInterface);
+export default MainInterface;

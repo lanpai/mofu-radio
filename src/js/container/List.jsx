@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import css from '../../css/element/List.scss';
+import css from '../../css/container/List.scss';
 
 import { FetchList } from '../../websocket.js';
 
@@ -11,16 +11,17 @@ import Song from '../element/Song.jsx';
 const mapStateToProps = state => {
     return {
         list: state.list,
-        favorites: state.favorites
+        favorites: state.favorites,
+        queueLength: state.queue.length
     }
 };
 
-class List extends PureComponent {
+class List extends Component {
     constructor() {
         super();
 
         this.state = {
-            type: 'new'
+            type: 'recent'
         };
         this.filter = '';
 
@@ -42,6 +43,9 @@ class List extends PureComponent {
                 break;
             case 'new':
                 filter = 'sort:new ' + filter;
+                break;
+            case 'recent':
+                filter = 'sort:recent stride:' + (this.props.queueLength + 1) + ' ' + filter;
                 break;
         }
 
@@ -66,12 +70,25 @@ class List extends PureComponent {
             this.fetchList(this.state.type);
     }
 
+    shouldComponentUpdate(prevProps) {
+        if (prevProps.list !== this.props.list ||
+            (prevProps.favorites !== this.props.favorites && this.state.type === 'favorites') ||
+            (prevProps.queueLength !== this.props.queueLength && this.state.type === 'recent'))
+            return true;
+        return false;
+    }
+
     render() {
         return (
             <>
                 <div className='filter'>
                     <div>
                         <input type='text' placeholder='Filter' onInput={ this.onSearch } />
+                        <div className={ this.state.type === 'recent' ? 'button active' : 'button' } onClick={ () => { this.setType('recent') } }>
+                            <svg style={{ width: '1.5em', height: '1.5em' }} viewBox='0 0 24 24'>
+                                <path fill='RGB(var(--foreground))' d='M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3' />
+                            </svg>
+                        </div>
                         <div className={ this.state.type === 'new' ? 'button active' : 'button' } onClick={ () => { this.setType('new') } }>
                             <svg style={{ width: '1.5em', height: '1.5em' }} viewBox='0 0 24 24'>
                                 <path fill='RGB(var(--foreground))' d='M20,4C21.11,4 22,4.89 22,6V18C22,19.11 21.11,20 20,20H4C2.89,20 2,19.11 2,18V6C2,4.89 2.89,4 4,4H20M8.5,15V9H7.25V12.5L4.75,9H3.5V15H4.75V11.5L7.3,15H8.5M13.5,10.26V9H9.5V15H13.5V13.75H11V12.64H13.5V11.38H11V10.26H13.5M20.5,14V9H19.25V13.5H18.13V10H16.88V13.5H15.75V9H14.5V14A1,1 0 0,0 15.5,15H19.5A1,1 0 0,0 20.5,14Z' />

@@ -145,7 +145,7 @@ wss.on('connection', function onWSConnection(ws, req) {
                                         }).filter(song => {
                                             if (song.stats)
                                                 return song.stats.lastPlayed < Date.now();
-                                        }).reverse().slice(CurrentQueue() + 1);
+                                        }).reverse();
                                         break;
                                 }
                                 break;

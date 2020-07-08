@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import css from '../../css/element/CurrentSong.scss';
@@ -12,11 +12,11 @@ const mapStateToProps = state => {
         playing: state.playing,
         jp: state.jp,
         currentSong: state.currentSong,
-        stats: state.stats
+        listeners: state.stats.listeners
     }
 };
 
-class CurrentSong extends PureComponent {
+class CurrentSong extends Component {
     constructor() {
         super();
     }
@@ -29,6 +29,15 @@ class CurrentSong extends PureComponent {
                 document.getElementById('playhead').style.width = `${percentage}%`;
             }
         }, 1000);
+    }
+
+    shouldComponentUpdate(prevProps) {
+        if (prevProps.playing !== this.props.playing ||
+            prevProps.jp !== this.props.jp ||
+            prevProps.currentSong.id !== this.props.currentSong.id ||
+            prevProps.listeners !== this.props.listeners)
+            return true;
+        return false;
     }
 
     render() {
@@ -87,7 +96,7 @@ class CurrentSong extends PureComponent {
                             <path fill='RGB(var(--foreground))' d='M12,1C7,1 3,5 3,10V17A3,3 0 0,0 6,20H9V12H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V12H15V20H18A3,3 0 0,0 21,17V10C21,5 16.97,1 12,1Z' />
                         </svg>
                         &nbsp;
-                        <span>{ this.props.stats.listeners }</span>
+                        <span>{ this.props.listeners }</span>
                     </div>
                     <div className='button' onClick={ ToggleJP }>
                         <svg style={{ width: '1em', height: '1em', marginBottom: '-0.175em' }} viewBox='0 0 24 24'>
