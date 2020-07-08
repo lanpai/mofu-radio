@@ -42,6 +42,11 @@ class CurrentSong extends PureComponent {
             tags = this.props.currentSong.en.tags || tags;
         }
 
+        let albumArt = this.props.currentSong.options ?
+            `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front` :
+            '/default.png'
+
+
         document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
         document.title = `${title} by ${artist} (mofu-radio)`;
 
@@ -49,10 +54,7 @@ class CurrentSong extends PureComponent {
             <>
                 <figure className={ this.props.playing ? 'albumArt' : 'albumArt grayscale' }>
                     <img
-                        src={ this.props.currentSong.options ?
-                            `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front` :
-                            '/default.png'
-                        }
+                        src={ albumArt }
                         onError={ (e) => { e.currentTarget.src = '/default.png' }}
                     />
                 </figure>
