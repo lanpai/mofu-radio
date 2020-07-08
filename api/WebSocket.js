@@ -81,6 +81,8 @@ wss.on('connection', function onWSConnection(ws, req) {
                     }
                     pushBack();
 
+                    let take = 20;
+
                     filter = '';
                     for (let i = 0; i < filterArr.length; i++) {
                         let val = '';
@@ -125,6 +127,33 @@ wss.on('connection', function onWSConnection(ws, req) {
                                     );
                                 });
                                 break;
+                            case 'sort:':
+                                val = filterArr[++i] || '';
+                                val = val.toLowerCase();
+                                switch (val) {
+                                    case 'new':
+                                        filtered = filtered.sortBy([ 'id' ]).reverse();
+                                        break;
+                                    case 'top':
+                                        filtered = filtered.sortBy([ 'timesReq' ]).filter(song => { return song.timesReq > 0 }).reverse();
+                                        break;
+                                    case 'recent':
+                                        filtered = filtered.sortBy(song => {
+                                            if (song.stats)
+                                                return song.stats.lastPlayed;
+                                        }).filter(song => {
+                                            if (song.stats)
+                                                return song.stats.lastPlayed < Date.now();
+                                        }).reverse().slice(1);
+                                        break;
+                                }
+                                break;
+                            case 'take:':
+                                val = filterArr[++i] || '';
+                                val = parseInt(val);
+                                if (val)
+                                    take = val;
+                                break;
                             default:
                                 filter += filterArr[i] + ' ';
                         }
@@ -137,6 +166,9 @@ wss.on('connection', function onWSConnection(ws, req) {
                         let fuse = new Fuse(filtered.value(), fuseOptions);
                         result = fuse.search(filter);
                     }
+
+                    result = result.slice(0, take);
+
                     ws.send(JSON.stringify({
                         type: 'UPDATE_LIST',
                         list: result

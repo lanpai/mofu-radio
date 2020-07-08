@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import css from '../../css/element/List.scss';
 
@@ -25,45 +24,47 @@ class Request extends Component {
         };
         this.filter = '';
 
+        this.onSearch = this.onSearch.bind(this);
         this.fetchList = this.fetchList.bind(this);
         this.setType = this.setType.bind(this);
         this.timeout = null;
     }
 
-    fetchList(e) {
+    fetchList(type) {
+        let filter = this.filter;
+        switch (type) {
+            case 'top':
+                filter = 'sort:top ' + filter;
+                break;
+            case 'favorites':
+                let favorites = this.props.favorites.join(',');
+                filter = 'id:' + favorites + ' ' + filter;
+                break;
+            case 'new':
+                filter = 'sort:new ' + filter;
+                break;
+        }
+
+        FetchList(filter);
+    }
+
+    onSearch(e) {
         if (this.timeout !== null)
             clearTimeout(this.timeout);
-        this.timeout = setTimeout(FetchList.bind(null, e.target.value), 100);
+
+        this.timeout = setTimeout(this.fetchList.bind(null, this.state.type), 100);
         this.filter = e.target.value;
     }
 
     setType(type) {
         this.setState({ type: type });
+        this.fetchList(type);
     }
 
     render() {
         let list = [];
-        let source = this.props.list;
-        switch (this.state.type) {
-            case 'top':
-                source = _.sortBy(source, [ 'timesReq' ]).filter(song => { return song.timesReq > 0 }).reverse();
-                break;
-            case 'favorites':
-                source = _.filter(source, song => {
-                    for (let id of this.props.favorites)
-                        if (song.id == id)
-                            return true;
-                    return false;
-                });
-                break;
-            case 'new':
-                source = _.sortBy(source, [ 'id' ]).reverse();
-                break;
-        }
-        let currentLength = source.length;
-        if (this.filter !== '*')
-            source = _.take(source, 20);
-        for (let song of source) {
+
+        for (let song of this.props.list) {
             let metadata = {
                 artist: song.artist || '',
                 title: song.title || '',
@@ -115,19 +116,12 @@ class Request extends Component {
                 </>
             );
         }
-        if (source.length < currentLength) {
-            list.push(
-                <>
-                    <i>and { currentLength - source.length } more... (Filter for '*' for all results)</i>
-                </>
-            );
-        }
 
         return (
             <>
                 <div className='filter'>
                     <div>
-                        <input type='text' placeholder='Filter' onInput={ this.fetchList } />
+                        <input type='text' placeholder='Filter' onInput={ this.onSearch } />
                         <div className={ this.state.type === 'new' ? 'button active' : 'button' } onClick={ () => { this.setType('new') } }>
                             <svg style={{ width: '1.5em', height: '1.5em' }} viewBox='0 0 24 24'>
                                 <path fill='RGB(var(--foreground))' d='M20,4C21.11,4 22,4.89 22,6V18C22,19.11 21.11,20 20,20H4C2.89,20 2,19.11 2,18V6C2,4.89 2.89,4 4,4H20M8.5,15V9H7.25V12.5L4.75,9H3.5V15H4.75V11.5L7.3,15H8.5M13.5,10.26V9H9.5V15H13.5V13.75H11V12.64H13.5V11.38H11V10.26H13.5M20.5,14V9H19.25V13.5H18.13V10H16.88V13.5H15.75V9H14.5V14A1,1 0 0,0 15.5,15H19.5A1,1 0 0,0 20.5,14Z' />
