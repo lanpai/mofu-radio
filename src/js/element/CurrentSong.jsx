@@ -81,17 +81,24 @@ class CurrentSong extends PureComponent {
                     </div>
                 </div>
 
-                <div style={{ float: 'left' }}>
-                    <svg style={{ width: '1em', height: '1em', marginBottom: '-0.2em' }} viewBox='0 0 24 24'>
-                        <path fill='RGB(var(--foreground))' d='M12,1C7,1 3,5 3,10V17A3,3 0 0,0 6,20H9V12H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V12H15V20H18A3,3 0 0,0 21,17V10C21,5 16.97,1 12,1Z' />
-                    </svg>
-                    &nbsp;
-                    <span>{ this.props.stats.listeners }</span>
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <div>
+                        <svg style={{ width: '1em', height: '1em', marginBottom: '-0.175em' }} viewBox='0 0 24 24'>
+                            <path fill='RGB(var(--foreground))' d='M12,1C7,1 3,5 3,10V17A3,3 0 0,0 6,20H9V12H5V10A7,7 0 0,1 12,3A7,7 0 0,1 19,10V12H15V20H18A3,3 0 0,0 21,17V10C21,5 16.97,1 12,1Z' />
+                        </svg>
+                        &nbsp;
+                        <span>{ this.props.stats.listeners }</span>
+                    </div>
+                    <div className='button' onClick={ ToggleJP }>
+                        <svg style={{ width: '1em', height: '1em', marginBottom: '-0.175em' }} viewBox='0 0 24 24'>
+                            <path fill='RGB(var(--foreground))' d='M12.87,15.07L10.33,12.56L10.36,12.53C12.1,10.59 13.34,8.36 14.07,6H17V4H10V2H8V4H1V6H12.17C11.5,7.92 10.44,9.75 9,11.35C8.07,10.32 7.3,9.19 6.69,8H4.69C5.42,9.63 6.42,11.17 7.67,12.56L2.58,17.58L4,19L9,14L12.11,17.11L12.87,15.07M18.5,10H16.5L12,22H14L15.12,19H19.87L21,22H23L18.5,10M15.88,17L17.5,12.67L19.12,17H15.88Z' />
+                        </svg>
+                        &nbsp;
+                        <span>
+                            { this.props.jp ? 'JP' : 'EN' }
+                        </span>
+                    </div>
                 </div>
-
-                <span style={{ float: 'right' }} className='button' onClick={ ToggleJP }>
-                    { this.props.jp ? 'jp' : 'en' }
-                </span>
             </>
 
         );
