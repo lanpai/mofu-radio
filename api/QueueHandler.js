@@ -8,6 +8,8 @@ var queue = [];
 function PickSong() {
     // OLDEST SONG
     // floor(rand()^4 * length)
+    if (db.read().get('songs').size().value() <= 0)
+        Log('Could not find any songs in the database. Place .mp3\'s into /queue and run \'node util.js\'', 0);
     let sorted = db.read().get('songs').sortBy(song => { return song.stats ? song.stats.lastPlayed : 0 });
     return sorted.get(Math.floor(Math.pow(Math.random(), 2) * sorted.size().value() * 0.75)).value().id;
 }

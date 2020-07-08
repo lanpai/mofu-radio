@@ -214,7 +214,8 @@ function encode(input, callback) {
     fs.copyFileSync(`${Config('directories.disc')}/${input.file}`, `${Config('directories.tmp')}/${input.file}`);
     
     // STRIPPING ID3 TAGS
-    execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input.file}"`);
+    if (Config('audio.stripMetadata'))
+        execSync(`id3v2 --delete-all "${Config('directories.tmp')}/${input.file}"`);
 
     // RUNNING LAME ENCODER
     let encoder = new Lame({

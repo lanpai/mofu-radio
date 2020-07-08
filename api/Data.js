@@ -30,7 +30,8 @@ config.defaultsDeep({
         bitrate: 320,
         sampleFreq: 44.1,
         chunkTime: 0.1,
-        backBufferLength: 15
+        backBufferLength: 15,
+        stripMetadata: true
     },
     cooldowns: {
         request: '5',

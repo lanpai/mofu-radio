@@ -28,6 +28,9 @@ function Log(log, verbosity) {
         var date = new Date();
         output += ' [' + date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + '] : ' + log;
         console.log(output);
+
+        if (verbosity === 0)
+            process.exit();
     }
 }
 
