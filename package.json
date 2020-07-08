@@ -5,7 +5,8 @@
   "main": "mofu-radio.js",
   "scripts": {
     "test:web": "webpack-dev-server --open --mode development",
-    "build:web": "webpack --mode production"
+    "build:web": "webpack --mode production",
+    "build:web-dev": "webpack --mode development"
   },
   "repository": {
     "type": "git",
