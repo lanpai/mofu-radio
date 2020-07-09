@@ -50,7 +50,7 @@ class Song extends Component {
                             </h3>
                         </Marquee>
                         <Marquee>
-                            <span className='songTags'>
+                            <span className='songTags' style={{ display: 'block' }}>
                                 { this.props.jp ? this.props.meta.tags : this.props.meta.en.tags || this.props.meta.tags }
                             </span>
                         </Marquee>
