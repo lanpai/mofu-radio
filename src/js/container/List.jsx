@@ -61,8 +61,10 @@ class List extends Component {
     }
 
     setType(type) {
-        this.setState({ type: type });
-        this.fetchList(type);
+        if (this.state.type !== type) {
+            this.setState({ type: type });
+            this.fetchList(type);
+        }
     }
 
     componentDidUpdate(prevProps) {
