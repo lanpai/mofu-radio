@@ -7,6 +7,7 @@ const { db, submissions, Config, AddSong } = require('./api/Data.js');
 // BASIC REQUIREMENTS
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // REQUIRING READLINE
 const rls = require('readline-sync');
@@ -144,7 +145,7 @@ switch (rls.question('Mode (new, submissions): ')) {
                         console.log('Converting file to MP3');
                         execSync(`cd "${Config('directories.submissions')}" && ffmpeg -i "${song.file}" -ab 320k -map_metadata 0 -id3v2_version 3 -y "${filePath.name}.mp3"`);
                         fs.unlinkSync(Config('directories.submissions') + '/' + song.file);
-                        song.file += filePath.name + '.mp3';
+                        song.file = filePath.name + '.mp3';
                     }
 
                     // ADD NEW SONG
