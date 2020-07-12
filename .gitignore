@@ -1,9 +1,11 @@
 # mofu-radio
 config.json
 db.json
+submissions.json
 disc/
 queue/
 tmp/
+submissions/
 package-lock.json
 
 # Logs

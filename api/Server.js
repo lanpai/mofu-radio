@@ -1,5 +1,5 @@
 // MOFU-RADIO REQUIREMENTS
-const { Config } = require('./Data.js');
+const { Config, CanSubmit, AddSubmission, CountSubmissions } = require('./Data.js');
 const Log = require('./Log.js');
 const { CurrentSong, NextSong, CurrentQueue } = require('./QueueHandler.js');
 
@@ -9,6 +9,11 @@ const http = require('http');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
+
+// REQUIRING EXPRESS
+const express = require('express');
+const app = express();
+const multer = require('multer');
 
 // REQUIRING NODE-LAME
 const { Lame } = require('node-lame');
@@ -65,88 +70,131 @@ var metadata = {};
 var currentSong = null;
 
 // INITIALIZING WEB SERVER METHODS
-var server = http.createServer(
-    function onRequest(req, res) {
-        Log('received request for ' + req.url, 4);
-        
+app.use(express.static('dist'));
 
-        // PARSING GET REQUEST
-        const get = req.url.split('?');
-        const webPath = get[0] || '';
-        const args = get[1] || '';
+app.get('/stream.mp3', (req, res) => {
+    res.writeHead(200, {
+        'Accept-Ranges': 'none',
+        'Cache-Control': 'no-cache,no-store,must-revalidate,max-age=0',
+        'Connection': 'keep-alive',
+        'Content-Type': 'audio/mpeg',
+        'icy-name': Config('icy.name'),
+        'icy-description': Config('icy.description'),
+        'icy-genre': Config('icy.genre'),
+        'icy-metaint': (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime')
+    });
 
-        switch (webPath) {
-            case '/stream.mp3':
-                res.writeHead(200, {
-                    'Accept-Ranges': 'none',
-                    'Cache-Control': 'no-cache,no-store,must-revalidate,max-age=0',
-                    'Connection': 'keep-alive',
-                    'Content-Type': 'audio/mpeg',
-                    'icy-name': Config('icy.name'),
-                    'icy-description': Config('icy.description'),
-                    'icy-genre': Config('icy.genre'),
-                    'icy-metaint': (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime')
-                });
+    // CHECK ICY HEADER
+    let isIcy = (req.headers['icy-metadata'] || '0') === '1';
 
-                // CHECK ICY HEADER
-                let isIcy = (req.headers['icy-metadata'] || '0') === '1';
+    // WRITING BACK BUFFER
+    let dataSent = 0;
+    backBuffer.forEach(obj => {
+        let buffer;
+        if (isIcy)
+            buffer = Buffer.concat([ obj.chunk, obj.metadata ]);
+        else
+            buffer = obj.chunk;
 
-                // WRITING BACK BUFFER
-                let dataSent = 0;
-                backBuffer.forEach(obj => {
-                    let buffer;
-                    if (isIcy)
-                        buffer = Buffer.concat([ obj.chunk, obj.metadata ]);
-                    else
-                        buffer = obj.chunk;
+        res.write(buffer);
+        dataSent += buffer.length;
+    });
 
-                    res.write(buffer);
-                    dataSent += buffer.length;
-                });
+    // ADDING USER TO LISTENERS
+    listeners.push({
+        isIcy: isIcy,
+        res: res,
+        dataSent: dataSent
+    });
+    
+    Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
 
-                // ADDING USER TO LISTENERS
-                listeners.push({
-                    isIcy: isIcy,
-                    res: res,
-                    dataSent: dataSent
-                });
-                
-                Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
+    UpdateListenerCount(listeners.length);
+});
 
-                UpdateListenerCount(listeners.length);
+const upload = multer({
+    dest: '/tmp/uploads',
+    limits: { fileSize: Config('submissions.maxUploadSize') * 1048576, parts: 8 }
+});
+const fileUpload = upload.single('file');
+app.post('/api/submit', fileUpload, (req, res) => {
+    let remoteAddr = req.headers['x-real-ip'] || req.connection.remoteAddress;
+    let timestamp = Date.now();
 
-                break;
-            default:
-                // ACCESSING FILES IN DIST
-                let pathName = path.normalize('./dist/' + webPath);
-                const ext = path.parse(webPath).ext;
-                res.setHeader('Access-Control-Allow-Origin', 'none');
+    function badRequest() {
+        res.status(400).end();
+        if (req.file)
+            fs.unlinkSync(path.join(req.file.destination, req.file.filename));
+    }
 
-                fs.access(pathName, fs.constants.F_OK, (err) => {
-                    if (err) {
-                        res.writeHead(200, { 'Content-type': 'text/html' });
-                        res.end(`404: File ${webPath} not found!`);
-                        return;
-                    }
+    req.body.artist = req.body.artist.trim();
+    req.body.title = req.body.title.trim();
+    req.body.tags = req.body.tags.trim();
+    req.body.musicbrainz = req.body.musicbrainz.trim();
+    req.body.comments = req.body.comments.trim();
 
-                    if (fs.statSync(pathName).isDirectory())
-                        pathName += 'index.html';
+    if (CountSubmissions() >= Config('submissions.maxSubmissions')) {
+        badRequest();
+        return;
+    }
+    if (!req.file) {
+        badRequest();
+        return;
+    }
+    if (req.body.artist === '') {
+        badRequest();
+        return;
+    }
+    if (req.body.title === '') {
+        badRequest();
+        return;
+    }
+    if (req.body.type !== 'addition' && req.body.type !== 'replacement') {
+        badRequest();
+        return;
+    }
 
-                    fs.readFile(pathName, (err, data) => {
-                        if (err) {
-                            res.statusCode = 500;
-                            res.end(`500: Internal server error.`);
-                        }
-                        else {
-                            res.writeHead(200, { 'Content-type': map[ext] || 'text/html' });
-                            res.end(data);
-                        }
-                    });
-                });
-                break;
+    if (!(req.body.bypass === Config('submissions.bypass') && Config('submissions.bypass') !== '')) {
+        let canSubmit = CanSubmit(remoteAddr);
+        if (canSubmit !== true) {
+            res.status(429).end(canSubmit);
+            fs.unlinkSync(path.join(req.file.destination, req.file.filename));
+            return;
         }
     }
-);
+
+    let fileName = `${req.body.artist} - ${req.body.title} ${timestamp}`.replace(/[\\\/:*?"<>|]/gi, '');
+    if (req.file.mimetype === 'audio/mpeg')
+        fileName += '.mp3';
+    else if (req.file.mimetype === 'audio/flac')
+        fileName += '.flac';
+    else {
+        badRequest();
+        return;
+    }
+
+    if (!fs.existsSync(Config('directories.submissions')))
+        fs.mkdirSync(Config('directories.submissions'));
+    fs.renameSync(req.file.path, path.join(Config('directories.submissions'), fileName));
+    
+    let data = {
+        file: fileName,
+        artist: req.body.artist,
+        title: req.body.title,
+        tags: req.body.tags,
+        ip: remoteAddr,
+        timestamp
+    }
+
+    if (req.body.musicbrainz)
+        data.musicbrainz = req.body.musicbrainz;
+    if (req.body.comments)
+        data.comments = req.body.comments;
+
+    AddSubmission(data);
+
+    res.status(200).end('Successfully added song to submission queue');
+});
 
 async function sendChunk(listener, chunk, metadata) {
     if (listener.isIcy)
@@ -283,24 +331,26 @@ function nextSong(iter) {
     });
 }
 
-server.listen(Config('network.port'),
-    function onListen() {
-        Log(`server is listening on ${Config('network.port')}`, 3);
+const server = http.createServer();
 
-        // ADDING FIRST SONG
-        currentSong = NextSong();
+server.listen(Config('network.port'), () => {
+    Log(`server is listening on ${Config('network.port')}`, 3);
 
-        encode(currentSong, function onEncoded(buffer) {
-            fileStream = new FileReadable(buffer);
+    // ADDING FIRST SONG
+    currentSong = NextSong();
 
-            // CREATING BACK BUFFER
-            for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
-                handleChunk();
+    encode(currentSong, function onEncoded(buffer) {
+        fileStream = new FileReadable(buffer);
 
-            nextSong(0);
-        });
-    }
-);
+        // CREATING BACK BUFFER
+        for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
+            handleChunk();
+
+        nextSong(0);
+    });
+});
+
+server.on('request', app);
 
 module.exports = server;
 
