@@ -14,7 +14,8 @@ class Submission extends PureComponent {
         super();
 
         this.state = {
-            fileString: 'No file selected'
+            fileString: 'No file selected',
+            disabled: false
         };
     }
 
@@ -59,9 +60,11 @@ class Submission extends PureComponent {
             else {
                 alert('Error ' + req.status + ' (This may be a bug! Report it @ https://github.com/lanpai/mofu-radio/issues)');
             }
+            this.setState({ disabled: false });
         }
 
         req.send(formData);
+        this.setState({ disabled: true });
     }
 
     clear() {
@@ -83,7 +86,7 @@ class Submission extends PureComponent {
             <details>
                 <summary className='button'><h3>Song Submission Form</h3></summary>
                 <hr />
-                <form id='submission'>
+                <form id='submission' style={ this.state.disabled ? { opacity: 0.3, pointerEvents: 'none' } : {}}>
                     <h4>Select File (MP3/FLAC)</h4>
                     <input name='file' id='submission-file' type='file' accept='.mp3,.flac' onChange={(e) => this.onFileChange(e)} />
                     <label className='button-box' for='submission-file'>Browse</label><br />
