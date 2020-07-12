@@ -1,3 +1,7 @@
+#submission {
+    transition: opacity 500ms;
+}
+
 #submission>input[type=text] {
     background-color: RGBA(var(--background), 0.9);
     width: calc(100% - 4px);

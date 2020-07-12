@@ -153,7 +153,7 @@ function AddSubmission(data) {
 }
 
 function CountSubmissions() {
-    return submissions.read().get('songs').size().value();
+    return submissions.read().get('songs').filter({ status: 'TBD' }).size().value();
 }
 
 module.exports = {
