@@ -3,6 +3,13 @@ const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 var db = low(new FileSync('db.json'));
 var config = low(new FileSync('config.json'));
+var submissions = low(new FileSync('submissions.json'));
+
+db.defaults({
+    songs: [],
+    requests: [],
+    users: []
+}).write();
 
 config.defaultsDeep({
     version: 'pre-alpha-34ki',
@@ -13,7 +20,8 @@ config.defaultsDeep({
     directories: {
         disc: 'disc',
         queue: 'queue',
-        tmp: 'tmp'
+        tmp: 'tmp',
+        submissions: 'submissions'
     },
     logging: {
         verbosity: 4
@@ -34,15 +42,20 @@ config.defaultsDeep({
         stripMetadata: true
     },
     cooldowns: {
-        request: '5',
-        song: '15'
+        request: 5,
+        song: 15,
+        submit: 1,
+        dailySubmissionCap: 10
+    },
+    submissions: {
+        maxSubmissions: 800,
+        maxUploadSize: 50,
+        bypass: ''
     }
 }).write();
 
-db.defaults({
-    songs: [],
-    requests: [],
-    users: []
+submissions.defaults({
+    songs: []
 }).write();
 
 function DB(path) {
@@ -50,7 +63,7 @@ function DB(path) {
 }
 
 function Config(path) {
-    return config.get(path).value();
+    return config.read().get(path).value();
 }
 
 function ReloadConfig() {
@@ -86,7 +99,7 @@ function CanRequest(id, ip) {
         let timeSincePlayed = (Date.now() - 
             (db.get('songs').find({ id: id }).value().stats.lastPlayed || 0)) / 1000 / 60;
         if (timeSincePlayed < Config('cooldowns.song'))
-            return `Song is on cooldown for ${Math.floor(Config('cooldowns.song') - timeSincePlayed) + 1} more minutes`;
+            return `Song is on cooldown for ${Math.floor(Config('cooldowns.song') - timeSincePlayed) + 1} more minute(s)`;
     }
 
     // CHECKING IF USER IS ON COOLDOWN
@@ -94,7 +107,7 @@ function CanRequest(id, ip) {
         let timeSinceRequest = (Date.now() -
             db.get('requests').filter({ ip: ip }).sortBy('timestamp').last().value().timestamp) / 1000 / 60;
         if (timeSinceRequest < Config('cooldowns.request'))
-            return `User on cooldown for ${Math.floor(Config('cooldowns.request') - timeSinceRequest) + 1} more minutes`;
+            return `User on cooldown for ${Math.floor(Config('cooldowns.request') - timeSinceRequest) + 1} more minute(s)`;
     }
 
     return true;
@@ -110,10 +123,44 @@ function AddRequest(id, ip) {
     song.assign({ timesReq: song.value().timesReq ? song.value().timesReq + 1 : 1 }).write();
 }
 
+function CanSubmit(ip) {
+    // CHECKING IF USER IS ON COOLDOWN
+    if (submissions.get('songs').filter({ ip: ip }).size().value() > 0) {
+        let timeSinceRequest = (Date.now() -
+            submissions.get('songs').filter({ ip: ip }).sortBy('timestamp').last().value().timestamp) / 1000 / 60;
+        if (timeSinceRequest < Config('cooldowns.submit'))
+            return `User on cooldown (Once every ${Config('cooldowns.submit')} minute(s))`;
+
+        if (submissions.get('songs').filter((song) => {
+                return song.ip === ip && ((Date.now() - song.timestamp) / 1000 / 60) < 1440;
+            }).size().value() >= Config('cooldowns.dailySubmissionCap'))
+            return `User on cooldown (${Config('cooldowns.dailySubmissionCap')} every 24 hours)`;
+    }
+
+    return true;
+}
+
+function AddSubmission(data) {
+    // FETCHING ID
+    let latest = submissions.get('songs').sortBy('id').last().value();
+    let id = (latest ? latest['id'] : 0) + 1;
+
+    submissions.read().get('songs').push({
+        id,
+        ...data,
+        status: 'TBD'
+    }).write();
+}
+
+function CountSubmissions() {
+    return submissions.read().get('songs').size().value();
+}
+
 module.exports = {
-    db, config,
+    db, config, submissions,
     DB, Config,
     ReloadConfig,
     AddSong,
-    CanRequest, AddRequest
+    CanRequest, AddRequest,
+    CanSubmit, AddSubmission, CountSubmissions
 };

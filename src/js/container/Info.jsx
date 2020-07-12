@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 
+import Submission from '../element/Submission.jsx';
 import Themer from '../element/Themer.jsx';
 
 class Info extends PureComponent {
@@ -24,6 +25,8 @@ class Info extends PureComponent {
                     </ul>
                 </details>
                 <hr />
+                <Submission />
+                <hr />
                 <details open>
                     <summary className='button'><h3>Stream Info</h3></summary>
                     <hr />
@@ -35,13 +38,13 @@ class Info extends PureComponent {
                     </ul>
                 </details>
                 <hr />
-                <details open>
-                    <summary className='button'><h3>Song Request Form</h3></summary>
-                    <hr />
-                    <p>Google Forms: <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>https:&#x2F;&#x2F;forms.gle&#x2F;mp3qZX9hEwnhm53V6</a></p>
-                </details>
+                <br />
                 <hr />
                 <a href='mailto:radio@piyo.cafe' target='_blank'>radio@piyo.cafe</a>
+                <br />
+                <a href='https://github.com/lanpai/mofu-radio/issues' target='_blank'>Bug Reports</a>
+                <br />
+                <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>Song Request Form</a>
                 <br />
                 <a href='/privacy-policy.html' target='_blank'>Privacy Policy</a>
                 <br />
