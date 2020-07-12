@@ -3,7 +3,6 @@
 }
 
 #submission>input[type=text] {
-    background-color: RGBA(var(--background), 0.9);
     width: calc(100% - 4px);
     border-width: 0;
     border-bottom-width: 1px;
@@ -15,7 +14,7 @@
 }
 
 #submission>input[type=text]::placeholder {
-    color: RGB(var(--foreground));
+    color: RGBA(var(--foreground), 0.6);
 }
 
 #submission>input[type=radio] {
