@@ -164,9 +164,9 @@ app.post('/api/submit', fileUpload, (req, res) => {
     }
 
     let fileName = `${req.body.artist} - ${req.body.title} ${timestamp}`.replace(/[\\\/:*?"<>|]/gi, '');
-    if (req.file.mimetype === 'audio/mpeg')
+    if (req.file.originalname.split('.').pop() === 'mp3')
         fileName += '.mp3';
-    else if (req.file.mimetype === 'audio/flac')
+    else if (req.file.originalname.split('.').pop() === 'flac')
         fileName += '.flac';
     else {
         badRequest();
@@ -175,7 +175,8 @@ app.post('/api/submit', fileUpload, (req, res) => {
 
     if (!fs.existsSync(Config('directories.submissions')))
         fs.mkdirSync(Config('directories.submissions'));
-    fs.renameSync(req.file.path, path.join(Config('directories.submissions'), fileName));
+    fs.copyFileSync(req.file.path, path.join(Config('directories.submissions'), fileName));
+    fs.unlinkSync(req.file.path);
     
     let data = {
         file: fileName,

@@ -139,6 +139,14 @@ switch (rls.question('Mode (new, submissions): ')) {
 
                     submissions.get('songs').find({ id: song.id }).set('status', 'accepted').write();
 
+                    let filePath = path.parse(song.file);
+                    if (filePath.ext !== '.mp3') {
+                        console.log('Converting file to MP3');
+                        execSync(`cd "${Config('directories.submissions')}" && ffmpeg -i "${song.file}" -ab 320k -map_metadata 0 -id3v2_version 3 -y "${filePath.name}.mp3"`);
+                        fs.unlinkSync(Config('directories.submissions') + '/' + song.file);
+                        song.file += filePath.name + '.mp3';
+                    }
+
                     // ADD NEW SONG
                     fs.renameSync(`${Config('directories.submissions')}/${song.file}`, `${Config('directories.disc')}/${newFile}`);
                     AddSong(metadata);

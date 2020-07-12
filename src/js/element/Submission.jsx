@@ -26,10 +26,6 @@ class Submission extends PureComponent {
             alert('Submission requires a file!');
             return;
         }
-        if (formData.get('file').type !== 'audio/mpeg' && formData.get('file').type !== 'audio/flac') {
-            alert('Submission file needs to be an MP3 or FLAC');
-            return;
-        }
         if (formData.get('file').size / 1048576 > 50) {
             alert('Submission file may not exceed 50MB');
             return;
@@ -77,7 +73,7 @@ class Submission extends PureComponent {
 
     onFileChange(e) {
         this.setState({
-            fileString: e.target.value.split(/(\\|\/)/g).pop()
+            fileString: e.target.files[0].name
         });
     }
 
