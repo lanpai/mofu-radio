@@ -14,6 +14,10 @@
     padding: 2px;
 }
 
+#submission>input[type=text]::placeholder {
+    color: RGB(var(--foreground));
+}
+
 #submission>input[type=radio] {
     display: none;
 }
@@ -42,7 +46,7 @@
 #submission>label {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 1em;
-    color: RGB(var(--midground));
+    color: RGB(var(--foreground));
     display: inline-flex;
     align-items: center;
     cursor: pointer;
