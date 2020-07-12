@@ -40,6 +40,13 @@ class CurrentSong extends Component {
         return false;
     }
 
+    updateBG(e) {
+        if (e.target.src.split('/').pop() === 'default.png')
+            document.getElementById('background').children[0].style.backgroundImage = 'unset';
+        else
+            document.getElementById('background').children[0].style.backgroundImage = `url(${e.target.src})`;
+    }
+
     render() {
         let artist = this.props.currentSong.artist || '';
         let title = this.props.currentSong.title || '';
@@ -56,7 +63,6 @@ class CurrentSong extends Component {
             '/default.png'
 
 
-        document.getElementById('background').children[0].style.backgroundImage = `url(${albumArt})`;
         document.title = `${title} by ${artist} (mofu-radio)`;
 
         return (
@@ -65,6 +71,7 @@ class CurrentSong extends Component {
                     <img
                         src={ albumArt }
                         onError={ (e) => { e.currentTarget.src = '/default.png' }}
+                        onLoad={ (e) => this.updateBG(e) }
                     />
                 </div>
                 <hr />

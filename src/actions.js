@@ -1,10 +1,9 @@
 import store from './store.js';
 
-let nextImage = null;
+let nextImage = new Image();
 
 function UpdateSong(currentSong, queue) {
     if (queue[0].options) {
-        nextImage = new Image();
         nextImage.src = queue[0].options.coverArtArchive ?
             `https://coverartarchive.org/release/${queue[0].options.coverArtArchive}/front` :
             '/default.png';
