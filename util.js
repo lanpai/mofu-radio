@@ -138,7 +138,7 @@ switch (rls.question('Mode (new, submissions): ')) {
 
                     metadata.file = newFile;
 
-                    submissions.get('songs').find({ id: song.id }).set('status', 'accepted').write();
+                    submissions.read().get('songs').find({ id: song.id }).set('status', 'accepted').write();
 
                     let filePath = path.parse(song.file);
                     if (filePath.ext !== '.mp3') {
