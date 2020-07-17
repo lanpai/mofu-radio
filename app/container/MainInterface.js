@@ -61,7 +61,7 @@ class MainInterface extends PureComponent {
 
         return (
             <>
-                <StatusBar translucent backgroundColor='transparent' barStyle={ this.props.theme.barStyle } />
+                <StatusBar translucent backgroundColor={ `rgba(${this.props.theme.background}, 0.9)` } barStyle={ this.props.theme.barStyle } />
                 <ScrollView style={{ backgroundColor: `rgb(${this.props.theme.background})` }}>
                     <View style={ styles.inner }>
                         <CoverArt source={ coverArt } />
