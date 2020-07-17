@@ -1,4 +1,5 @@
 const MOMO = {
+    name: 'MOMO',
     background: "255, 255, 255",
     highlight: "255, 20, 145",
     foreground: "32, 32, 32",
@@ -8,6 +9,7 @@ const MOMO = {
 };
 
 const RIAJUU = {
+    name: 'RIAJUU',
     background: "24, 24, 24",
     highlight: "20, 255, 145",
     foreground: "180, 180, 180",
@@ -17,6 +19,7 @@ const RIAJUU = {
 };
 
 const MATCHA = {
+    name: 'MATCHA',
     background: "100, 97, 101",
     highlight: "221, 252, 173",
     foreground: "180, 180, 180",
@@ -26,6 +29,7 @@ const MATCHA = {
 };
 
 const MOCHA = {
+    name: 'MOCHA',
     background: "99, 71, 77",
     highlight: "254, 193, 150",
     foreground: "180, 180, 180",
@@ -35,6 +39,7 @@ const MOCHA = {
 };
 
 const DUSK = {
+    name: 'DUSK',
     background: "28, 35, 33",
     highlight: "254, 193, 150",
     foreground: "180, 180, 180",

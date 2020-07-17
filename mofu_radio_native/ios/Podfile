@@ -81,6 +81,7 @@ target 'mofu_radio_native' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
+
   target 'mofu_radio_nativeTests' do
     inherit! :complete
     # Pods for testing

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 import { connect } from 'react-redux';
 
@@ -8,18 +9,18 @@ import { MOMO, RIAJUU, MATCHA, MOCHA, DUSK } from '../themes.js';
 
 import Text from './Text.js';
 
+const THEMES = {
+    MOMO,
+    RIAJUU,
+    MATCHA,
+    MOCHA,
+    DUSK
+};
+
 const mapStateToProps = state => {
     return {
         theme: state.storageReducer.theme
     };
-};
-
-const THEMES = {
-    'momo': MOMO,
-    'riajuu': RIAJUU,
-    'matcha': MATCHA,
-    'mocha': MOCHA,
-    'dusk': DUSK
 };
 
 class Themer extends PureComponent {
@@ -28,28 +29,34 @@ class Themer extends PureComponent {
     }
 
     render() {
-        let themes = [];
-
-        for (let theme in THEMES) {
-            themes.push(
-                <TouchableOpacity key={ theme } style={ styles.theme } onPress={() => UpdateTheme(THEMES[theme])}>
-                    <Text li style={{ color: `rgb(${this.props.theme.foreground})` }}>{ theme }</Text>
-                </TouchableOpacity>
-            );
-        }
-
         return (
             <View>
-                <Text h4 style={{ color: `rgb(${this.props.theme.foreground})` }}>Presets</Text>
-                { themes }
+                <DropDownPicker
+                items={ Object.keys(THEMES).map((theme) => { return { label: theme, value: theme } }) }
+                defaultValue={ this.props.theme.name || 'MOMO' }
+                style={{ ...styles.picker, backgroundColor: `rgb(${this.props.theme.background})`, borderColor: `rgb(${this.props.theme.foreground})` }}
+                dropDownStyle={{ backgroundColor: `rgb(${this.props.theme.background})`, borderColor: `rgb(${this.props.theme.foreground})` }}
+                labelStyle={{ ...styles.label, color: `rgb(${this.props.theme.foreground})` }}
+                itemStyle={{ paddingVertical: 0 }}
+                dropDownMaxHeight={ 500 }
+                placeholder='Select a theme'
+                showArrow={ false }
+                onChangeItem={(theme) => UpdateTheme(THEMES[theme.value])}/>
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    theme: {
-        opacity: 0.75
+    picker: {
+        borderWidth: StyleSheet.hairlineWidth,
+    },
+    label: {
+        fontFamily: 'NotoSansJP-Regular',
+        fontSize: 14,
+        includeFontPadding: false,
+        textAlign: 'left',
+        width: '100%'
     }
 });
 
