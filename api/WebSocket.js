@@ -42,6 +42,11 @@ wss.on('connection', function onWSConnection(ws, req) {
             }
 
             switch (message.type) {
+                case 'PING':
+                    ws.send(JSON.stringify({
+                        type: 'PONG'
+                    }));
+                    return;
                 case 'FETCH_LIST':
                     // FUZZY SEARCHING THROUGH DATABASE
                     let filter = message.filter || '*';
