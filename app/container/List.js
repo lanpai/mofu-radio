@@ -60,7 +60,7 @@ class List extends Component {
         if (this.timeout !== null)
             clearTimeout(this.timeout);
         this.timeout = setTimeout(this.fetchList.bind(null, this.state.type), 100);
-        this.filter = e.target.values;
+        this.filter = text;
     }
 
     setType(type) {
