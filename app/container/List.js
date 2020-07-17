@@ -80,7 +80,8 @@ class List extends Component {
         if (prevProps.list !== this.props.list ||
             (prevProps.favorites !== this.props.favorites && this.state.type === 'favorites') ||
             (prevProps.queue !== this.props.queue && this.state.type === 'recent') ||
-            prevProps.theme !== this.props.theme)
+            prevProps.theme !== this.props.theme ||
+            prevProps.jp !== this.props.jp)
             return true;
         return false;
     }
