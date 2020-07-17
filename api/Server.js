@@ -71,6 +71,7 @@ var currentSong = null;
 
 // INITIALIZING WEB SERVER METHODS
 app.use(express.static('dist'));
+app.use(express.json());
 
 app.get('/stream.mp3', (req, res) => {
     res.writeHead(200, {
@@ -100,8 +101,11 @@ app.get('/stream.mp3', (req, res) => {
         dataSent += buffer.length;
     });
 
+    let remoteAddr = req.headers['x-real-ip'] || req.connection.remoteAddress;
+
     // ADDING USER TO LISTENERS
     listeners.push({
+        ip: remoteAddr,
         isIcy: isIcy,
         res: res,
         dataSent: dataSent
@@ -110,6 +114,20 @@ app.get('/stream.mp3', (req, res) => {
     Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
 
     UpdateListenerCount(listeners.length);
+});
+
+app.get('/api/updateProxyListenerCount', (req, res) => {
+    let remoteAddr = req.headers['x-real-ip'] || req.connection.remoteAddress;
+
+    if (Config('allowedProxies').includes(remoteAddr)) {
+        let newCount = parseInt(req.query.count) || 0;
+        Log(`updating proxy listener count for ${remoteAddr} (listeners: ${newCount})`, 4);
+        UpdateProxyListenerCount(remoteAddr, newCount);
+        res.status(200).end('Successfully updated proxy listener count');
+    }
+    else {
+        res.status(401).end();
+    }
 });
 
 const upload = multer({
@@ -246,6 +264,7 @@ function handleChunk() {
     for (let i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i].res.socket.writable === false) {
             Log(`cleaning up dead listener (data sent: ${listeners[i].dataSent} bytes) (listeners: ${listeners.length - 1})`, 4);
+            UpdateProxyListenerCount(listeners[i].ip, 0);
             listeners.splice(i, 1);
             isCleaned = true;
         }
@@ -356,4 +375,4 @@ server.on('request', app);
 module.exports = server;
 
 // REQUIRING WSBROADCAST AFTER SERVER INITIALIZATION
-const { wsBroadcast, wsBroadcastImmediate, UpdateListenerCount } = require('./WebSocket.js');
+const { wsBroadcast, wsBroadcastImmediate, UpdateListenerCount, UpdateProxyListenerCount } = require('./WebSocket.js');

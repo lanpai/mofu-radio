@@ -29,7 +29,7 @@ wss.on('connection', function onWSConnection(ws, req) {
 
     // SENDING INITIAL DATA
     ws.send(JSON.stringify({ type: 'UPDATE_SONG', currentSong: CurrentSong(), queue: CurrentQueue() }));
-    ws.send(JSON.stringify({ type: 'UPDATE_LISTENERS', count: listenerCount }));
+    ws.send(JSON.stringify({ type: 'UPDATE_LISTENERS', count: listenerCount + proxyListenerCount }));
 
     ws.on('message', function onIncomingMessage(message) {
         try {
@@ -244,15 +244,37 @@ async function wsBroadcastImmediate(message) {
 }
 
 var listenerCount = 0;
+var proxyListenerCount = 0;
+var proxyListeners = {};
 function UpdateListenerCount(count) {
     listenerCount = count;
     wsBroadcastImmediate({
         type: 'UPDATE_LISTENERS',
-        count: listenerCount
+        count: listenerCount + proxyListenerCount
     });
+}
+
+function UpdateProxyListenerCount(ip, count) {
+    if (count === 0)
+        delete proxyListeners[ip];
+    else
+        proxyListeners[ip] = count;
+
+    let newProxyListenerCount = 0;
+    for (let proxyCount of Object.values(proxyListeners))
+        newProxyListenerCount += proxyCount;
+
+    if (proxyListenerCount !== newProxyListenerCount) {
+        proxyListenerCount = newProxyListenerCount;
+
+        wsBroadcastImmediate({
+            type: 'UPDATE_LISTENERS',
+            count: listenerCount + proxyListenerCount
+        });
+    }
 }
 
 module.exports = {
     wsBroadcast, wsBroadcastImmediate,
-    UpdateListenerCount
+    UpdateListenerCount, UpdateProxyListenerCount
 };

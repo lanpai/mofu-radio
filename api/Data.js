@@ -51,7 +51,8 @@ config.defaultsDeep({
         maxSubmissions: 800,
         maxUploadSize: 50,
         bypass: ''
-    }
+    },
+    allowedProxies: []
 }).write();
 
 submissions.defaults({
