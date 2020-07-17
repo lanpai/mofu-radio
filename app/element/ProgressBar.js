@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -10,7 +10,7 @@ const mapStateToProps = state => {
     };
 };
 
-class ProgressBar extends Component {
+class ProgressBar extends PureComponent {
     constructor() {
         super();
 

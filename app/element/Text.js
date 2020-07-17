@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import ReactNative from 'react-native';
 
-class Text extends Component {
+class Text extends PureComponent {
     constructor() {
         super()
     }
@@ -10,6 +10,7 @@ class Text extends Component {
         let fontSize = 14;
         let fontWeight = '400';
         let fontFamily = 'NotoSansJP-Regular';
+        let marginLeft = 0;
 
         if (this.props.h1) {
             fontSize = 35;
@@ -28,8 +29,10 @@ class Text extends Component {
         }
         else if (this.props.h4)
             fontSize = 14;
+        else if (this.props.li)
+            marginLeft = 15
 
-        return <ReactNative.Text style={{ includeFontPadding: false, fontSize, fontWeight, fontFamily, ...this.props.style }}>{ this.props.children }</ReactNative.Text>
+        return <ReactNative.Text style={{ includeFontPadding: false, fontSize, fontWeight, fontFamily, marginLeft, ...this.props.style }}>{ this.props.li ? '▹ ' + this.props.children : this.props.children }</ReactNative.Text>
     }
 }
 

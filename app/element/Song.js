@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -18,7 +18,7 @@ const mapStateToProps = state => {
     };
 };
 
-class Song extends Component {
+class Song extends PureComponent {
     constructor() {
         super();
     }

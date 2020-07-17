@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Svg, Path } from 'react-native-svg';
 
 import { TogglePlay, ToggleFavorite } from '../actions.js';
+import { Play, Stop } from '../audio.js';
 
 const mapStateToProps = state => {
     return {
@@ -16,9 +17,17 @@ const mapStateToProps = state => {
     };
 };
 
-class Controls extends Component {
+class Controls extends PureComponent {
     constructor() {
         super();
+    }
+
+    onToggle() {
+        TogglePlay();
+        if (this.props.playing)
+            Stop();
+        else
+            Play();
     }
 
     render() {
@@ -51,7 +60,7 @@ class Controls extends Component {
         return (
             <View style={ styles.controls }>
                 <View style={ styles.icon }>
-                    <TouchableOpacity onPress={() => TogglePlay() }>
+                    <TouchableOpacity onPress={() => this.onToggle() }>
                         { playPause }
                     </TouchableOpacity>
                 </View>

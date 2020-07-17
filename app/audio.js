@@ -9,74 +9,62 @@ TrackPlayer.updateOptions({
     capabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_STOP
     ],
     compactCapabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_STOP
     ]
 });
 
-let track = {};
-let isPlaying = false;
+var track = {};
+var status = 'stopped';
 
-store.subscribe(() => {
-    let title = store.getState().reducer.currentSong.title || '';
-    let artist = store.getState().reducer.currentSong.artist || '';
-    let tags = store.getState().reducer.currentSong.tags || '';
+function Play() {
+    TrackPlayer.reset();
+    TrackPlayer.add(track).then(() => {
+        status = 'playing';
+        TrackPlayer.play();
+    });
+}
 
-    if (!store.getState().jp) {
-        if (store.getState().reducer.currentSong.en) {
-            title = store.getState().reducer.currentSong.en.title || title;
-            artist = store.getState().reducer.currentSong.en.artist || artist;
-            tags = store.getState().reducer.currentSong.en.tags || tags;
-        }
-    }
+function Pause() {
+    status = 'paused';
+    TrackPlayer.pause();
+}
 
+function Stop() {
+    isPlaying = 'stopped';
+    TrackPlayer.reset();
+}
+
+function UpdateMetadata(metadata) {
     let coverArt = '';
-    if (store.getState().reducer.currentSong.options)
-        if (store.getState().reducer.currentSong.options.coverArtArchive)
-            coverArt = `https://coverartarchive.org/release/${store.getState().reducer.currentSong.options.coverArtArchive}/front`;
+    if (metadata.coverArt)
+        coverArt = `https://coverartarchive.org/release/${metadata.coverArt}/front`;
 
     track = {
         id: '0',
         url: 'https://mofu.piyo.cafe/stream.mp3',
-        title: title,
-        artist: artist,
-        album: tags,
+        title: metadata.title || '',
+        artist: metadata.artist || '',
+        album: metadata.tags || '',
         artwork: coverArt
     };
 
-    if (store.getState().reducer.playing && !isPlaying) {
-        isPlaying = true;
-        TrackPlayer.reset();
-        TrackPlayer.add(track).then(() => {
-            TrackPlayer.play();
-        });
-    }
-    else if (!store.getState().reducer.playing && isPlaying) {
-        isPlaying = false;
-        TrackPlayer.pause();
-    }
-    else if (isPlaying) {
+    if (status !== 'stopped')
         TrackPlayer.updateMetadataForTrack('0', track);
-    }
-});
-
-function Play() {
-    if (!isPlaying) {
-        isPlaying = true;
-        TrackPlayer.reset();
-        TrackPlayer.add(track).then(() => {
-            TrackPlayer.play();
-        });
-    }
 }
 
-function Pause() {
-    if (isPlaying) {
-        isPlaying = false;
-        TrackPlayer.pause();
-    }
+function UpdateCoverArt(coverArt) {
+    track = {
+        ...track,
+        artwork: coverArt || ''
+    };
+
+    if (status !== 'stopped')
+        TrackPlayer.updateMetadataForTrack('0', track);
 }
 
-export { Play, Pause };
+export { Play, Pause, Stop, UpdateMetadata, UpdateCoverArt };

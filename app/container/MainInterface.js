@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, StatusBar, View, ScrollView } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -17,6 +17,7 @@ import Queue from './Queue.js';
 import List from './List.js';
 import Info from './Info.js';
 
+import { UpdateMetadata } from '../audio.js';
 import { ConnectSocket } from '../websocket.js';
 
 const mapStateToProps = state => {
@@ -29,7 +30,7 @@ const mapStateToProps = state => {
 
 const Tab = createMaterialTopTabNavigator();
 
-class MainInterface extends Component {
+class MainInterface extends PureComponent {
     constructor() {
         super();
     }
@@ -55,6 +56,8 @@ class MainInterface extends Component {
         if (this.props.currentSong.options)
             if (this.props.currentSong.options.coverArtArchive)
                 coverArt = `https://coverartarchive.org/release/${this.props.currentSong.options.coverArtArchive}/front`
+
+        UpdateMetadata({ title, artist, tags, coverArt });
 
         return (
             <>

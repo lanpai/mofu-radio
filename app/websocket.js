@@ -77,7 +77,7 @@ function ConnectSocket() {
     }
 
     ws.onopen = function onWSOpen(e) {
-        FetchList('*');
+        FetchList('sort:new');
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -22,7 +22,7 @@ const THEMES = {
     'dusk': DUSK
 };
 
-class Themer extends Component {
+class Themer extends PureComponent {
     constructor() {
         super();
     }
@@ -33,13 +33,14 @@ class Themer extends Component {
         for (let theme in THEMES) {
             themes.push(
                 <TouchableOpacity key={ theme } style={ styles.theme } onPress={() => UpdateTheme(THEMES[theme])}>
-                    <Text style={{ color: `rgb(${this.props.theme.foreground})` }}>{ theme }</Text>
+                    <Text li style={{ color: `rgb(${this.props.theme.foreground})` }}>{ theme }</Text>
                 </TouchableOpacity>
             );
         }
 
         return (
             <View>
+                <Text h4 style={{ color: `rgb(${this.props.theme.foreground})` }}>Presets</Text>
                 { themes }
             </View>
         )

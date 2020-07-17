@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 
-class CoverArt extends Component {
+import { UpdateCoverArt } from '../audio.js';
+
+class CoverArt extends PureComponent {
     constructor() {
         super();
 
@@ -23,6 +25,8 @@ class CoverArt extends Component {
 
     render() {
         let source = this.state.source;
+
+        UpdateCoverArt(source);
 
         return (
             <View style={ styles.coverArt } onError={() => this.setState({ source: 'https://mofu.piyo.cafe/default.png' })}>

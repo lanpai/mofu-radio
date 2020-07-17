@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { connect } from 'react-redux';
 
-class Marquee extends Component {
+class Marquee extends PureComponent {
     constructor() {
         super();
     }

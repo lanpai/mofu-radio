@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -15,7 +15,7 @@ const mapStateToProps = state => {
     };
 };
 
-class InfoBar extends Component {
+class InfoBar extends PureComponent {
     constructor() {
         super();
     }
