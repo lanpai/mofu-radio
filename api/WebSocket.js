@@ -254,11 +254,11 @@ function UpdateListenerCount(count) {
     });
 }
 
-function UpdateProxyListenerCount(ip, count) {
+function UpdateProxyListenerCount(proxyKey, count) {
     if (count === 0)
-        delete proxyListeners[ip];
+        delete proxyListeners[proxyKey];
     else
-        proxyListeners[ip] = count;
+        proxyListeners[proxyKey] = count;
 
     let newProxyListenerCount = 0;
     for (let proxyCount of Object.values(proxyListeners))

@@ -108,7 +108,8 @@ app.get('/stream.mp3', (req, res) => {
         ip: remoteAddr,
         isIcy: isIcy,
         res: res,
-        dataSent: dataSent
+        dataSent: dataSent,
+        proxyKey: req.headers['proxy-key'] || ''
     });
     
     Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
@@ -117,13 +118,24 @@ app.get('/stream.mp3', (req, res) => {
 });
 
 app.get('/api/updateProxyListenerCount', (req, res) => {
-    let remoteAddr = req.headers['x-real-ip'] || req.connection.remoteAddress;
+    if (Config('proxyKeys').includes(req.query.proxyKey)) {
+        let foundProxy = false;
+        for (let listener of listeners) {
+            if (listener.proxyKey === req.query.proxyKey) {
+                foundProxy = true;
+                break;
+            }
+        }
 
-    if (Config('allowedProxies').includes(remoteAddr)) {
-        let newCount = parseInt(req.query.count) || 0;
-        Log(`updating proxy listener count for ${remoteAddr} (listeners: ${newCount})`, 4);
-        UpdateProxyListenerCount(remoteAddr, newCount);
-        res.status(200).end('Successfully updated proxy listener count');
+        if (foundProxy) {
+            let newCount = parseInt(req.query.count) || 0;
+            Log(`updating proxy listener count (proxy key: ${req.query.proxyKey}) (listeners: ${newCount})`, 4);
+            UpdateProxyListenerCount(req.query.proxyKey, newCount);
+            res.status(200).end('Successfully updated proxy listener count');
+        }
+        else {
+            res.status(400).end();
+        }
     }
     else {
         res.status(401).end();
@@ -264,7 +276,8 @@ function handleChunk() {
     for (let i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i].res.socket.writable === false) {
             Log(`cleaning up dead listener (data sent: ${listeners[i].dataSent} bytes) (listeners: ${listeners.length - 1})`, 4);
-            UpdateProxyListenerCount(listeners[i].ip, 0);
+            if (listeners[i].proxyKey)
+                UpdateProxyListenerCount(listeners[i].proxyKey, 0);
             listeners.splice(i, 1);
             isCleaned = true;
         }
