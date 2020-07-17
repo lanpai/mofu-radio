@@ -27,6 +27,7 @@ function ConnectSocket() {
 
     let firstConnect = iteration++ === 0;
     let connected = false;
+    let pinger = null;
 
     ws.onmessage = function onWSMessage(e) {
         let message = JSON.parse(e.data);
@@ -55,14 +56,17 @@ function ConnectSocket() {
             case 'PUSH_QUEUE':
                 PushQueue(message.song);
                 break;
+            case 'PONG':
+                break;
             default:
-                console.error('could not recognize message type ' + message.type);
+                console.log('could not recognize message type ' + message.type);
                 break;
         }
     }
 
     ws.onclose = function onWSClose(e) {
         console.log('socket closed: attempting reconnect in 5 second');
+        clearInterval(pinger);
         setTimeout(ConnectSocket, 5000);
     }
 
@@ -78,6 +82,10 @@ function ConnectSocket() {
 
     ws.onopen = function onWSOpen(e) {
         FetchList('sort:new');
+
+        pinger = setInterval(() => ws.send(JSON.stringify({
+                type: 'PING'
+        })), 3000);
     }
 }
 
