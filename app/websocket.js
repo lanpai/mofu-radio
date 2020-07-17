@@ -25,7 +25,6 @@ function ConnectSocket() {
     console.log('connecting to socket');
     ws = new WebSocket('wss://mofu.piyo.cafe');
 
-    let firstConnect = iteration++ === 0;
     let connected = false;
     let pinger = null;
 
@@ -44,9 +43,6 @@ function ConnectSocket() {
                     if (splashShown) {
                         SplashScreen.hide();
                         splashShown = false;
-                    }
-                    if (!firstConnect) {
-                        alert('Successfully reconnected to server!');
                     }
                 }
                 break;
