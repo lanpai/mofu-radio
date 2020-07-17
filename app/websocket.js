@@ -1,3 +1,5 @@
+import { Alert } from 'react-native';
+
 import { UpdateSong, UpdateList, UpdateListeners, PushQueue } from './actions.js';
 
 import SplashScreen from 'react-native-splash-screen';
@@ -32,7 +34,7 @@ function ConnectSocket() {
         let message = JSON.parse(e.data);
         switch (message.type) {
             case 'MESSAGE':
-                alert(message.message);
+                Alert.alert('', message.message);
                 break;
             case 'UPDATE_SONG':
                 UpdateSong(message.currentSong, message.queue);
