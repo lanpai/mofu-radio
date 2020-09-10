@@ -1,5 +1,5 @@
 // MOFU-RADIO REQUIREMENTS
-const { Config, CanSubmit, AddSubmission, CountSubmissions } = require('./Data.js');
+const { db, Config, CanSubmit, AddSubmission, CountSubmissions } = require('./Data.js');
 const Log = require('./Log.js');
 const { CurrentSong, NextSong, CurrentQueue } = require('./QueueHandler.js');
 
@@ -225,6 +225,67 @@ app.post('/api/submit', fileUpload, (req, res) => {
     AddSubmission(data);
 
     res.status(200).end('Successfully added song to submission queue');
+});
+
+app.get('/list', (req, res) => {
+    const rows = db.read().get('songs').map(song => {
+        return `
+            <tr>
+                <td class="center">${song.id}</td>
+                <td>${song.artist}<br />${song.en && song.en.artist ? song.en.artist : ''}</td>
+                <td>${song.title}<br />${song.en && song.en.title ? song.en.title : ''}</td>
+                <td>${song.tags ? song.tags : ''}<br />${song.en && song.en.tags ? song.en.tags : ''}</td>
+                <td class="center">${song.stats && song.stats.count ? song.stats.count : 0}</td>
+                <td class="center">${song.stats && song.stats.lastPlayed ? new Date(song.stats.lastPlayed).toLocaleString("en-US") : ''}</td>
+            </tr>
+        `;
+    }).value().join('');
+    const template = `
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Songs List (mofu-radio)</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&display=swap');
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+                    td, th {
+                        border: 1px solid black;
+                        padding: 4px;
+                        font-family: 'Noto Sans JP', sans-serif;
+                        font-size: 13px;
+                    }
+                    tr:nth-child(even) {
+                        background-color: #dddddd;
+                    }
+                    .center {
+                        text-align: center;
+                    }
+                </style>
+            </head>
+            <body>
+                <table>
+                    <thead>
+                        <tr>
+                            <th onClick="sortTable(0)">ID</th>
+                            <th>Artist</th>
+                            <th>Title</th>
+                            <th>Tags</th>
+                            <th>Play Count</th>
+                            <th>Last Played</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </body>
+        </html>
+    `;
+    res.status(200).end(template);
 });
 
 async function sendChunk(listener, chunk, metadata) {
