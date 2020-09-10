@@ -46,6 +46,8 @@ class Info extends PureComponent {
                 <br />
                 <a href='https://forms.gle/mp3qZX9hEwnhm53V6' target='_blank'>Song Request Form</a>
                 <br />
+                <a href='/list' target='_blank'>Song List</a>
+                <br />
                 <a href='/privacy-policy.html' target='_blank'>Privacy Policy</a>
                 <br />
                 <br />
