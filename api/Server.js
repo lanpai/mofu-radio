@@ -278,10 +278,14 @@ async function sendChunkBulk(chunk, metadata) {
         sendChunk(listener, chunk, metadata)
 }
 
-function handleChunk() {
+var lastReadTime;
+function handleChunk(enableTimings = true) {
     // CREATING BUFFER
-    let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime');
+    let timingsDiff = lastReadTime ? Date.now() - lastReadTime : 1000 * Config('audio.chunKTime');
+    let multiplier = timingsDiff / (1000 * Config('audio.chunkTime'));
+    let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime') * (enableTimings ? multiplier : 1);
     let chunk = fileStream._read(chunkSize);
+    lastReadTime = Date.now();
 
     // CHECKING FOR EOF (LOAD NEXT SONG)
     if (chunk.length < chunkSize)
@@ -416,7 +420,7 @@ function InitServer() {
 
         // CREATING BACK BUFFER
         for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
-            handleChunk();
+            handleChunk(false);
 
         server.listen(Config('network.port'), () => {
             Log(`server is listening on ${Config('network.port')}`, 3);
