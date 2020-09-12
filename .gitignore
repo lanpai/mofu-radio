@@ -2,6 +2,7 @@
 config.json
 db.json
 submissions.json
+discord.json
 disc/
 queue/
 tmp/

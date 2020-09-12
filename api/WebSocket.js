@@ -1,8 +1,9 @@
 // MOFU-RADIO REQUIREMENTS
 const { CurrentSong, CurrentQueue, Request, GetSong } = require('./QueueHandler.js');
 const Log = require('./Log.js');
-const server = require('./Server.js');
+const { server } = require('./Server.js');
 const { db, Config, CanRequest } = require('./Data.js');
+const { SetListenerCount } = require('./Discord.js');
 
 // REQUIRING WS
 const WebSocket = require('ws');
@@ -29,7 +30,7 @@ wss.on('connection', function onWSConnection(ws, req) {
 
     // SENDING INITIAL DATA
     ws.send(JSON.stringify({ type: 'UPDATE_SONG', currentSong: CurrentSong(), queue: CurrentQueue() }));
-    ws.send(JSON.stringify({ type: 'UPDATE_LISTENERS', count: listenerCount + proxyListenerCount }));
+    ws.send(JSON.stringify({ type: 'UPDATE_LISTENERS', count: listenerCount }));
 
     ws.on('message', function onIncomingMessage(message) {
         try {
@@ -249,37 +250,16 @@ async function wsBroadcastImmediate(message) {
 }
 
 var listenerCount = 0;
-var proxyListenerCount = 0;
-var proxyListeners = {};
 function UpdateListenerCount(count) {
     listenerCount = count;
     wsBroadcastImmediate({
         type: 'UPDATE_LISTENERS',
-        count: listenerCount + proxyListenerCount
+        count: listenerCount
     });
-}
-
-function UpdateProxyListenerCount(proxyKey, count) {
-    if (count === 0)
-        delete proxyListeners[proxyKey];
-    else
-        proxyListeners[proxyKey] = count;
-
-    let newProxyListenerCount = 0;
-    for (let proxyCount of Object.values(proxyListeners))
-        newProxyListenerCount += proxyCount;
-
-    if (proxyListenerCount !== newProxyListenerCount) {
-        proxyListenerCount = newProxyListenerCount;
-
-        wsBroadcastImmediate({
-            type: 'UPDATE_LISTENERS',
-            count: listenerCount + proxyListenerCount
-        });
-    }
+    SetListenerCount(listenerCount);
 }
 
 module.exports = {
     wsBroadcast, wsBroadcastImmediate,
-    UpdateListenerCount, UpdateProxyListenerCount
+    UpdateListenerCount
 };

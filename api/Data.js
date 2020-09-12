@@ -4,6 +4,7 @@ const FileSync = require('lowdb/adapters/FileSync');
 var db = low(new FileSync('db.json'));
 var config = low(new FileSync('config.json'));
 var submissions = low(new FileSync('submissions.json'));
+var discord = low(new FileSync('discord.json'));
 
 db.defaults({
     songs: [],
@@ -52,11 +53,15 @@ config.defaultsDeep({
         maxUploadSize: 50,
         bypass: ''
     },
-    proxyKeys: []
+    discordToken: ''
 }).write();
 
 submissions.defaults({
     songs: []
+}).write();
+
+discord.defaults({
+    servers: []
 }).write();
 
 function DB(path) {
@@ -158,7 +163,7 @@ function CountSubmissions() {
 }
 
 module.exports = {
-    db, config, submissions,
+    db, config, submissions, discord,
     DB, Config,
     ReloadConfig,
     AddSong,

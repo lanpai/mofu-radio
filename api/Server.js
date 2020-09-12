@@ -2,6 +2,7 @@
 const { db, Config, CanSubmit, AddSubmission, CountSubmissions } = require('./Data.js');
 const Log = require('./Log.js');
 const { CurrentSong, NextSong, CurrentQueue } = require('./QueueHandler.js');
+const { InitDiscord, SetTitle } = require('./Discord.js');
 
 // BASIC REQUIREMENTS
 const { Readable } = require('stream');
@@ -112,34 +113,10 @@ app.get('/stream.mp3', (req, res) => {
         proxyKey: req.headers['proxy-key'] || ''
     });
     
-    Log(`received new listener on stream (listeners: ${listeners.length})`, 4);
+    const newListenerCount = listeners.reduce((acc, curr) => (acc + (curr.ip === '::1' ? 0 : 1)), 0);
+    Log(`received new listener on stream (listeners: ${newListenerCount})`, 4);
 
-    UpdateListenerCount(listeners.length);
-});
-
-app.get('/api/updateProxyListenerCount', (req, res) => {
-    if (Config('proxyKeys').includes(req.query.proxyKey)) {
-        let foundProxy = false;
-        for (let listener of listeners) {
-            if (listener.proxyKey === req.query.proxyKey) {
-                foundProxy = true;
-                break;
-            }
-        }
-
-        if (foundProxy) {
-            let newCount = parseInt(req.query.count) || 0;
-            Log(`updating proxy listener count (proxy key: ${req.query.proxyKey}) (listeners: ${newCount})`, 4);
-            UpdateProxyListenerCount(req.query.proxyKey, newCount);
-            res.status(200).end('Successfully updated proxy listener count');
-        }
-        else {
-            res.status(400).end();
-        }
-    }
-    else {
-        res.status(401).end();
-    }
+    UpdateListenerCount(newListenerCount);
 });
 
 const upload = multer({
@@ -336,15 +313,17 @@ function handleChunk() {
     let isCleaned = false;
     for (let i = listeners.length - 1; i >= 0; i--) {
         if (listeners[i].res.socket.writable === false) {
-            Log(`cleaning up dead listener (data sent: ${listeners[i].dataSent} bytes) (listeners: ${listeners.length - 1})`, 4);
-            if (listeners[i].proxyKey)
-                UpdateProxyListenerCount(listeners[i].proxyKey, 0);
+            Log(`cleaning up dead listener (data sent: ${listeners[i].dataSent} bytes)`, 4);
             listeners.splice(i, 1);
             isCleaned = true;
         }
     }
-    if (isCleaned)
-        UpdateListenerCount(listeners.length);
+    if (isCleaned) {
+        const newListenerCount = listeners.reduce((acc, curr) => (acc + (curr.ip === '::1' ? 0 : 1)), 0);
+        Log(`removed dead listener(s) (listeners: ${newListenerCount})`, 4);
+
+        UpdateListenerCount(newListenerCount);
+    }
 }
 
 function encode(input, callback) {
@@ -382,6 +361,7 @@ function encode(input, callback) {
 
 function nextSong(iter) {
     Log(`now playing #${iter} "${currentSong.artist} - ${currentSong.title}"`, 3);
+    SetTitle(currentSong.title);
 
     // RETRIEVE QUEUE FROM QUEUEHANDLER
     let queue = CurrentQueue();
@@ -427,26 +407,28 @@ function nextSong(iter) {
 
 const server = http.createServer();
 
-server.listen(Config('network.port'), () => {
-    Log(`server is listening on ${Config('network.port')}`, 3);
-
+function InitServer() {
     // ADDING FIRST SONG
     currentSong = NextSong();
 
-    encode(currentSong, function onEncoded(buffer) {
+    encode(currentSong, async function onEncoded(buffer) {
         fileStream = new FileReadable(buffer);
 
         // CREATING BACK BUFFER
         for (let i = 0; i < Config('audio.backBufferLength') / Config('audio.chunkTime'); i++)
             handleChunk();
 
+        server.listen(Config('network.port'), () => {
+            Log(`server is listening on ${Config('network.port')}`, 3);
+        });
+        await InitDiscord();
         nextSong(0);
     });
-});
+}
 
 server.on('request', app);
 
-module.exports = server;
+module.exports = { server, InitServer };
 
 // REQUIRING WSBROADCAST AFTER SERVER INITIALIZATION
-const { wsBroadcast, wsBroadcastImmediate, UpdateListenerCount, UpdateProxyListenerCount } = require('./WebSocket.js');
+const { wsBroadcast, wsBroadcastImmediate, UpdateListenerCount } = require('./WebSocket.js');
