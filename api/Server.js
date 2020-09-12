@@ -113,7 +113,7 @@ app.get('/stream.mp3', (req, res) => {
         proxyKey: req.headers['proxy-key'] || ''
     });
     
-    const newListenerCount = listeners.reduce((acc, curr) => (acc + (curr.ip === '::1' ? 0 : 1)), 0);
+    const newListenerCount = listeners.reduce((acc, curr) => (acc + ((curr.ip === '::1' || curr.ip === '::ffff:127.0.0.1') ? 0 : 1)), 0);
     Log(`received new listener on stream (listeners: ${newListenerCount})`, 4);
 
     UpdateListenerCount(newListenerCount);
@@ -323,7 +323,7 @@ function handleChunk(enableTimings = true) {
         }
     }
     if (isCleaned) {
-        const newListenerCount = listeners.reduce((acc, curr) => (acc + (curr.ip === '::1' ? 0 : 1)), 0);
+        const newListenerCount = listeners.reduce((acc, curr) => (acc + ((curr.ip === '::1' || curr.ip === '::ffff:127.0.0.1') ? 0 : 1)), 0);
         Log(`removed dead listener(s) (listeners: ${newListenerCount})`, 4);
 
         UpdateListenerCount(newListenerCount);
