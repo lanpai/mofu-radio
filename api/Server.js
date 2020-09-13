@@ -281,11 +281,8 @@ async function sendChunkBulk(chunk, metadata) {
 var lastReadTime;
 function handleChunk(enableTimings = true) {
     // CREATING BUFFER
-    let timingsDiff = lastReadTime ? Date.now() - lastReadTime : 1000 * Config('audio.chunKTime');
-    let multiplier = timingsDiff / (1000 * Config('audio.chunkTime'));
-    let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime') * (enableTimings ? multiplier : 1);
+    let chunkSize = (Config('audio.bitrate') / 8) * 1000 * Config('audio.chunkTime');
     let chunk = fileStream._read(chunkSize);
-    lastReadTime = Date.now();
 
     // CHECKING FOR EOF (LOAD NEXT SONG)
     if (chunk.length < chunkSize)
