@@ -381,10 +381,6 @@ function nextSong(iter) {
     if (fileStream === null)
         Log('file stream is null', 1);
 
-    // LISTENER LOOP
-    let timer = new NanoTimer();
-    timer.setInterval(handleChunk, '', `${Config('audio.chunkTime')}s`);
-
     // PRELOADING NEXT SONG IN QUEUE
     encode(queue[0], function onEncoded(buffer) {
         nextFileStream = new FileReadable(buffer);
@@ -393,7 +389,6 @@ function nextSong(iter) {
     // END STATE
     fileStream.on('end', function onStreamEnd() {
         // CLEANING UP
-        timer.clearInterval();
         fileStream.destroy();
 
         // LOADING PRELOADED STREAM
@@ -424,6 +419,19 @@ function InitServer() {
         });
         await InitDiscord();
         nextSong(0);
+
+        // LISTENER LOOP
+        var timer = new NanoTimer();
+        var timeHandledChunk;
+        timer.setInterval(() => {
+            while (!timeHandledChunk || Date.now() - timeHandledChunk >= 1000 * Config('audio.chunkTime')) {
+                if (timeHandledChunk)
+                    timeHandledChunk += 1000 * Config('audio.chunkTime');
+                else
+                    timeHandledChunk = Date.now();
+                handleChunk();
+            }
+        }, '', `${Config('audio.chunkTime')}s`);
     });
 }
 
