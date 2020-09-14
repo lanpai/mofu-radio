@@ -347,9 +347,7 @@ function encode(input, callback) {
     }).setFile(`${Config('directories.tmp')}/${input.file}`);
     encoder.encode().then(function onEncoded() {
         // ESTIMATE DURATION
-        let stats = fs.statSync(`${Config('directories.tmp')}/${input.file}`);
-        let kbSize = stats.size / 125;
-        input.estDuration = kbSize / Config('audio.bitrate');
+        input.estDuration = encoder.getBuffer().length / (Config('audio.bitrate') * 125);
 
         // DELETE TMP FILE
         fs.unlinkSync(`${Config('directories.tmp')}/${input.file}`);
