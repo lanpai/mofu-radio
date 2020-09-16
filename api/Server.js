@@ -120,7 +120,7 @@ app.get('/stream.mp3', (req, res) => {
 });
 
 const upload = multer({
-    dest: '/tmp/uploads',
+    dest: '/tmp',
     limits: { fileSize: Config('submissions.maxUploadSize') * 1048576, parts: 8 }
 });
 const fileUpload = upload.single('file');
